@@ -1,0 +1,103 @@
+mysql> CREATE DATEBASE learnsql;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'DATEBASE learnsql' at line 1
+mysql> CREATE DATABASE learnsql;
+Query OK, 1 row affected (2.77 sec)
+
+mysql> CREATE DATABASE learnsql;
+ERROR 1007 (HY000): Can't create database 'learnsql'; database exists
+mysql> CREATE DATABASE IF NOT EXISTS learnsql;
+Query OK, 1 row affected, 1 warning (0.03 sec)
+
+mysql> SHOW WARNINGS;
++-------+------+---------------------------------------------------+
+| Level | Code | Message                                           |
++-------+------+---------------------------------------------------+
+| Note  | 1007 | Can't create database 'learnsql'; database exists |
++-------+------+---------------------------------------------------+
+1 row in set (0.05 sec)
+
+mysql> SHOW DATABASES;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| learnsql           |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+5 rows in set (1.65 sec)
+
+mysql> SHOW CREATE DATABASE learnsql 
+    -> ;
++----------+-------------------------------------------------------------------+
+| Database | Create Database                                                   |
++----------+-------------------------------------------------------------------+
+| learnsql | CREATE DATABASE `learnsql` /*!40100 DEFAULT CHARACTER SET utf8 */ |
++----------+-------------------------------------------------------------------+
+1 row in set (0.03 sec)
+
+mysql> ALTER DATABASE learnsql CHARACTERSET gbk;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'CHARACTERSET gbk' at line 1
+mysql> ALTER DATABASE learnsql CHARACTER SET gbk;
+Query OK, 1 row affected (0.17 sec)
+
+mysql> SHOW CREATE DATABASE learnsql;
++----------+------------------------------------------------------------------+
+| Database | Create Database                                                  |
++----------+------------------------------------------------------------------+
+| learnsql | CREATE DATABASE `learnsql` /*!40100 DEFAULT CHARACTER SET gbk */ |
++----------+------------------------------------------------------------------+
+1 row in set (0.00 sec)
+
+mysql> ALTER DATABASE learnsql DEFAULT CHARACTER SET = utf8
+    -> ;
+Query OK, 1 row affected, 1 warning (0.10 sec)
+
+mysql> SHOW CREATE DATABASE learnsql;
++----------+-------------------------------------------------------------------+
+| Database | Create Database                                                   |
++----------+-------------------------------------------------------------------+
+| learnsql | CREATE DATABASE `learnsql` /*!40100 DEFAULT CHARACTER SET utf8 */ |
++----------+-------------------------------------------------------------------+
+1 row in set (0.00 sec)
+
+mysql> USE learnsql
+Database changed
+mysql> SELECT DATABASE();
++------------+
+| DATABASE() |
++------------+
+| learnsql   |
++------------+
+1 row in set (0.00 sec)
+
+mysql> DROP DATABASE learnsql;
+Query OK, 0 rows affected (0.42 sec)
+
+mysql> CREATE DATABASE IF NOT EXISTS learn_mysql;
+Query OK, 1 row affected (0.04 sec)
+
+mysql> SHOW CREATE DATABASE learn_mysql;
++-------------+----------------------------------------------------------------------+
+| Database    | Create Database                                                      |
++-------------+----------------------------------------------------------------------+
+| learn_mysql | CREATE DATABASE `learn_mysql` /*!40100 DEFAULT CHARACTER SET utf8 */ |
++-------------+----------------------------------------------------------------------+
+1 row in set (0.00 sec)
+
+mysql> SHOW DATABASES();
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '()' at line 1
+mysql> SHOW DATABASES;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| learn_mysql        |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+5 rows in set (0.00 sec)
+
+mysql> \t

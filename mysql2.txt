@@ -1,0 +1,662 @@
+mysql> SHOW ENGINS;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'ENGINS' at line 1
+mysql> SHOW ENGINES;
++--------------------+---------+----------------------------------------------------------------+--------------+------+------------+
+| Engine             | Support | Comment                                                        | Transactions | XA   | Savepoints |
++--------------------+---------+----------------------------------------------------------------+--------------+------+------------+
+| MEMORY             | YES     | Hash based, stored in memory, useful for temporary tables      | NO           | NO   | NO         |
+| MRG_MYISAM         | YES     | Collection of identical MyISAM tables                          | NO           | NO   | NO         |
+| CSV                | YES     | CSV storage engine                                             | NO           | NO   | NO         |
+| FEDERATED          | NO      | Federated MySQL storage engine                                 | NULL         | NULL | NULL       |
+| PERFORMANCE_SCHEMA | YES     | Performance Schema                                             | NO           | NO   | NO         |
+| MyISAM             | YES     | MyISAM storage engine                                          | NO           | NO   | NO         |
+| InnoDB             | DEFAULT | Supports transactions, row-level locking, and foreign keys     | YES          | YES  | YES        |
+| BLACKHOLE          | YES     | /dev/null storage engine (anything you write to it disappears) | NO           | NO   | NO         |
+| ARCHIVE            | YES     | Archive storage engine                                         | NO           | NO   | NO         |
++--------------------+---------+----------------------------------------------------------------+--------------+------+------------+
+9 rows in set (0.07 sec)
+
+mysql> SHOW ENGINES\G;
+*************************** 1. row ***************************
+      Engine: MEMORY
+     Support: YES
+     Comment: Hash based, stored in memory, useful for temporary tables
+Transactions: NO
+          XA: NO
+  Savepoints: NO
+*************************** 2. row ***************************
+      Engine: MRG_MYISAM
+     Support: YES
+     Comment: Collection of identical MyISAM tables
+Transactions: NO
+          XA: NO
+  Savepoints: NO
+*************************** 3. row ***************************
+      Engine: CSV
+     Support: YES
+     Comment: CSV storage engine
+Transactions: NO
+          XA: NO
+  Savepoints: NO
+*************************** 4. row ***************************
+      Engine: FEDERATED
+     Support: NO
+     Comment: Federated MySQL storage engine
+Transactions: NULL
+          XA: NULL
+  Savepoints: NULL
+*************************** 5. row ***************************
+      Engine: PERFORMANCE_SCHEMA
+     Support: YES
+     Comment: Performance Schema
+Transactions: NO
+          XA: NO
+  Savepoints: NO
+*************************** 6. row ***************************
+      Engine: MyISAM
+     Support: YES
+     Comment: MyISAM storage engine
+Transactions: NO
+          XA: NO
+  Savepoints: NO
+*************************** 7. row ***************************
+      Engine: InnoDB
+     Support: DEFAULT
+     Comment: Supports transactions, row-level locking, and foreign keys
+Transactions: YES
+          XA: YES
+  Savepoints: YES
+*************************** 8. row ***************************
+      Engine: BLACKHOLE
+     Support: YES
+     Comment: /dev/null storage engine (anything you write to it disappears)
+Transactions: NO
+          XA: NO
+  Savepoints: NO
+*************************** 9. row ***************************
+      Engine: ARCHIVE
+     Support: YES
+     Comment: Archive storage engine
+Transactions: NO
+          XA: NO
+  Savepoints: NO
+9 rows in set (0.00 sec)
+
+ERROR: 
+No query specified
+
+mysql> SHOW VARIABLES LIKE 'storage_engine';
+Empty set, 1 warning (0.19 sec)
+
+mysql> SHOW WARNINGS;
++---------+------+----------------------------------------------------------------------------------------------+
+| Level   | Code | Message                                                                                      |
++---------+------+----------------------------------------------------------------------------------------------+
+| Warning | 1366 | Incorrect string value: '\xD6\xD0\xB9\xFA\xB1\xEA...' for column 'VARIABLE_VALUE' at row 518 |
++---------+------+----------------------------------------------------------------------------------------------+
+1 row in set (0.00 sec)
+
+mysql> SHOW VARIABLES LIKE 'have%';
++------------------------+----------+
+| Variable_name          | Value    |
++------------------------+----------+
+| have_compress          | YES      |
+| have_dynamic_loading   | YES      |
+| have_geometry          | YES      |
+| have_openssl           | YES      |
+| have_profiling         | YES      |
+| have_query_cache       | NO       |
+| have_rtree_keys        | YES      |
+| have_ssl               | YES      |
+| have_statement_timeout | YES      |
+| have_symlink           | DISABLED |
++------------------------+----------+
+10 rows in set, 1 warning (0.00 sec)
+
+mysql> SHOW VARIABLES LIKE 'storage_engine';
+Empty set, 1 warning (0.01 sec)
+
+mysql> SHOW DATABASES;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| learn_mysql        |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+5 rows in set (0.00 sec)
+
+mysql> DROP DATABASE sys;
+Query OK, 101 rows affected (1.18 sec)
+
+mysql> SHOW DATABASES;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| learn_mysql        |
+| mysql              |
+| performance_schema |
++--------------------+
+4 rows in set (0.00 sec)
+
+mysql> SELECT DATABASE;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+mysql> SELECT DATABASE();
++------------+
+| DATABASE() |
++------------+
+| NULL       |
++------------+
+1 row in set (0.00 sec)
+
+mysql> #注释1
+mysql> --注释2
+    -> #创建数据库
+    -> CREATE DATABASE IF NOT EXISTS `siyan` CHARACTER SET 'UTF8';
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '--注释2
+
+CREATE DATABASE IF NOT EXISTS `siyan` CHARACTER SET 'UTF8'' at line 1
+mysql> USE `siyan`;
+ERROR 1049 (42000): Unknown database 'siyan'
+mysql> 
+mysql> #创建成员表（user）
+mysql> --编号 id
+    -> --用户名 username
+    -> --年龄 age
+    -> --性别 sex
+    -> --邮箱 email
+    -> --地址 addr
+    -> --生日 birth
+    -> --薪水 salary
+    -> --电话 tel
+    -> --是否结婚 married
+    -> --字段注释 COMMENT '注释内容'
+    -> 
+    -> CREATA TABLE IF NOT EXISTS `user` (
+    -> id SMALLINT,
+    -> username VARCHAR,
+    -> age TINYINT,
+    -> sex ENUM('男','女','保密'),
+    -> email VARCHAR(50),
+    -> addr VARCHAR(200),
+    -> birth YEAR,
+    -> salary FLOAT(8,2),
+    -> tel INT,
+    -> married TINYINT(1) COMMENT '0已婚，1未婚'
+    -> )ENGINE=INNODB CHARACTER=UTF8;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '--编号 id
+--用户名 username
+--年龄 age
+--性别 sex
+--邮箱 email
+--地�' at line 1
+mysql> \s
+--------------
+
+Connection id:		9
+Current database:	
+Current user:		root@localhost
+SSL:			Cipher in use is DHE-RSA-AES128-GCM-SHA256
+Using delimiter:	;
+Server version:		8.0.12 MySQL Community Server - GPL
+Protocol version:	10
+Connection:		localhost via TCP/IP
+Server characterset:	utf8
+Db     characterset:	utf8
+Client characterset:	utf8
+Conn.  characterset:	utf8
+TCP port:		3306
+Uptime:			2 hours 38 min 51 sec
+
+Threads: 2  Questions: 33  Slow queries: 0  Opens: 171  Flush tables: 2  Open tables: 147  Queries per second avg: 0.003
+--------------
+
+mysql> SET NAMES GBK;
+Query OK, 0 rows affected (0.10 sec)
+
+mysql> \s
+--------------
+
+Connection id:		9
+Current database:	
+Current user:		root@localhost
+SSL:			Cipher in use is DHE-RSA-AES128-GCM-SHA256
+Using delimiter:	;
+Server version:		8.0.12 MySQL Community Server - GPL
+Protocol version:	10
+Connection:		localhost via TCP/IP
+Server characterset:	utf8
+Db     characterset:	utf8
+Client characterset:	gbk
+Conn.  characterset:	gbk
+TCP port:		3306
+Uptime:			2 hours 39 min 16 sec
+
+Threads: 2  Questions: 37  Slow queries: 0  Opens: 171  Flush tables: 2  Open tables: 147  Queries per second avg: 0.003
+--------------
+
+mysql> #注释1
+mysql> --注释2
+    -> #创建数据库
+    -> CREATE DATABASE IF NOT EXISTS `siyan` CHARACTER SET 'UTF8';
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '--注释2
+
+CREATE DATABASE IF NOT EXISTS `siyan` CHARACTER SET 'UTF8'' at line 1
+mysql> USE `siyan`;
+ERROR 1049 (42000): Unknown database 'siyan'
+mysql> 
+mysql> #创建成员表（user）
+mysql> --编号 id
+    -> --用户名 username
+    -> --年龄 age
+    -> --性别 sex
+    -> --邮箱 email
+    -> --地址 addr
+    -> --生日 birth
+    -> --薪水 salary
+    -> --电话 tel
+    -> --是否结婚 married
+    -> --注意，有中文时需临时转换客户端编码方式: SET NAMES GBK;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '--编号 id
+--用户�?username
+--年龄 age
+--性别 sex
+--�?? em' at line 1
+mysql> --字段注释 COMMENT '注释内容'
+    -> 
+    -> CREATE TABLE IF NOT EXISTS `user` (
+    -> id SMALLINT,
+    -> username VARCHAR,
+    -> age TINYINT,
+    -> sex ENUM('男','女','保密'),
+    -> email VARCHAR(50),
+    -> addr VARCHAR(200),
+    -> birth YEAR,
+    -> salary FLOAT(8,2),
+    -> tel INT,
+    -> married TINYINT(1) COMMENT '0已婚，1未婚'
+    -> )ENGINE=INNODB CHARACTER=UTF8;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '--字�?注释 COMMENT '注释内�?'
+
+CREATE TABLE IF NOT EXISTS `user`' at line 1
+mysql> CREATE TABLE IF NOT EXISTS `user` (
+    -> id SMALLINT,
+    -> username VARCHAR,
+    -> age TINYINT,
+    -> sex ENUM('男','女','保密'),
+    -> email VARCHAR(50),
+    -> addr VARCHAR(200),
+    -> birth YEAR,
+    -> salary FLOAT(8,2),
+    -> tel INT,
+    -> married TINYINT(1) COMMENT '0已婚，1未婚'
+    -> )ENGINE=INNODB CHARACTER=UTF8;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ',
+age TINYINT,
+sex ENUM('�?,'�?,'保密'),
+email VARCHAR(50),
+addr VARCHA' at line 3
+mysql> CREATE TABLE IF NOT EXISTS `user` (
+    -> id SMALLINT,
+    -> username VARCHAR,
+    -> age INT,
+    -> sex ENUM('男','女','保密'),
+    -> email VARCHAR(50),
+    -> addr VARCHAR(200),
+    -> birth YEAR,
+    -> salary FLOAT(8,2),
+    -> tel INT,
+    -> married TINYINT(1) COMMENT '0已婚，1未婚'
+    -> )ENGINE=INNODB CHARACTER=UTF8;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ',
+age INT,
+sex ENUM('�?,'�?,'保密'),
+email VARCHAR(50),
+addr VARCHAR(20' at line 3
+mysql> CREATE TABLE IF NOT EXISTS user (
+    -> id SMALLINT,
+    -> username VARCHAR(20),
+    -> age SMALLINT,
+    -> sex ENUM('男','女','保密'),
+    -> email VARCHAR(50),
+    -> addr VARCHAR(200),
+    -> birth YEAR,
+    -> salary FLOAT(8,2),
+    -> tel INT,
+    -> married TINYINT(1) COMMENT '0未婚，非0已婚'
+    -> )ENGINE=INNODB CHARACTER=UTF8;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '=UTF8' at line 12
+mysql> CREATE TABLE IF NOT EXISTS user (
+    -> id SMALLINT,
+    -> username VARCHAR(20),
+    -> age SMALLINT,
+    -> sex ENUM('男','女','保密'),
+    -> email VARCHAR(50),
+    -> addr VARCHAR(200),
+    -> birth YEAR,
+    -> salary FLOAT(8,2),
+    -> tel INT,
+    -> married TINYINT(1) COMMENT '0未婚，非0已婚'
+    -> )ENGINE=INNODB CHARSET=UTF8;
+ERROR 1046 (3D000): No database selected
+mysql> \s
+--------------
+
+Connection id:		9
+Current database:	
+Current user:		root@localhost
+SSL:			Cipher in use is DHE-RSA-AES128-GCM-SHA256
+Using delimiter:	;
+Server version:		8.0.12 MySQL Community Server - GPL
+Protocol version:	10
+Connection:		localhost via TCP/IP
+Server characterset:	utf8
+Db     characterset:	utf8
+Client characterset:	gbk
+Conn.  characterset:	gbk
+TCP port:		3306
+Uptime:			3 hours 32 sec
+
+Threads: 2  Questions: 48  Slow queries: 0  Opens: 171  Flush tables: 2  Open tables: 147  Queries per second avg: 0.004
+--------------
+
+mysql> #注释1
+mysql> --注释2
+    -> #创建数据库
+    -> CREATE DATABASE IF NOT EXISTS `siyan` CHARACTER SET 'UTF8';
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '--注释2
+
+CREATE DATABASE IF NOT EXISTS `siyan` CHARACTER SET 'UTF8'' at line 1
+mysql> USE `siyan`;
+ERROR 1049 (42000): Unknown database 'siyan'
+mysql> 
+mysql> #创建成员表（user）
+mysql> --编号 id
+    -> --用户名 username
+    -> --年龄 age
+    -> --性别 sex
+    -> --邮箱 email
+    -> --地址 addr
+    -> --生日 birth
+    -> --薪水 salary
+    -> --电话 tel
+    -> --是否结婚 married
+    -> --注意，有中文时需临时转换客户端编码方式: SET NAMES GBK;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '--编号 id
+--用户�?username
+--年龄 age
+--性别 sex
+--�?? em' at line 1
+mysql> --字段注释 COMMENT '注释内容'
+    -> 
+    -> CREATE TABLE IF NOT EXISTS user (
+    -> id SMALLINT,
+    -> username VARCHAR(20),
+    -> age SMALLINT,
+    -> sex ENUM('男','女','保密'),
+    -> email VARCHAR(50),
+    -> addr VARCHAR(200),
+    -> birth YEAR,
+    -> salary FLOAT(8,2),
+    -> tel INT,
+    -> married TINYINT(1) COMMENT '0未婚，非0已婚'
+    -> )ENGINE=INNODB CHARSET=UTF8;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '--字�?注释 COMMENT '注释内�?'
+
+CREATE TABLE IF NOT EXISTS user (' at line 1
+mysql> #注释1
+mysql> --注释2
+    -> #创建数据库
+    -> CREATE DATABASE IF NOT EXISTS `siyan` CHARACTER SET 'UTF8';
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '--注释2
+
+CREATE DATABASE IF NOT EXISTS `siyan` CHARACTER SET 'UTF8'' at line 1
+mysql> USE `siyan`;
+ERROR 1049 (42000): Unknown database 'siyan'
+mysql> 
+mysql> #创建成员表（user）
+mysql> --编号 id
+    -> --用户名 username
+    -> --年龄 age
+    -> --性别 sex
+    -> --邮箱 email
+    -> --地址 addr
+    -> --生日 birth
+    -> --薪水 salary
+    -> --电话 tel
+    -> --是否结婚 married
+    -> --注意，有中文时需临时转换客户端编码方式: SET NAMES GBK;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '--编号 id
+--用户�?username
+--年龄 age
+--性别 sex
+--�?? em' at line 1
+mysql> --字段注释 COMMENT 注释内容
+    -> 
+    -> CREATE TABLE IF NOT EXISTS user (
+    -> id SMALLINT,
+    -> username VARCHAR(20),
+    -> age SMALLINT,
+    -> sex ENUM('男','女','保密'),
+    -> email VARCHAR(50),
+    -> addr VARCHAR(200),
+    -> birth YEAR,
+    -> salary FLOAT(8,2),
+    -> tel INT,
+    -> married TINYINT(1) COMMENT '0未婚，非0已婚'
+    -> )ENGINE=INNODB CHARSET=UTF8;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '--字�?注释 COMMENT 注释内�?
+
+CREATE TABLE IF NOT EXISTS user (
+i' at line 1
+mysql> #注释1
+mysql> --注释2
+    -> #创建数据库
+    -> CREATE DATABASE IF NOT EXISTS `siyan` CHARACTER SET 'UTF8';
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '--注释2
+
+CREATE DATABASE IF NOT EXISTS `siyan` CHARACTER SET 'UTF8'' at line 1
+mysql> USE `siyan`;
+ERROR 1049 (42000): Unknown database 'siyan'
+mysql> 
+mysql> #创建成员表（user）
+mysql> --编号 id
+    -> --用户名 username
+    -> --年龄 age
+    -> --性别 sex
+    -> --邮箱 email
+    -> --地址 addr
+    -> --生日 birth
+    -> --薪水 salary
+    -> --电话 tel
+    -> --是否结婚 married
+    -> --注意，有中文时需临时转换客户端编码方式 SET NAMES GBK;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '--编号 id
+--用户�?username
+--年龄 age
+--性别 sex
+--�?? em' at line 1
+mysql> --字段注释 COMMENT 注释内容
+    -> 
+    -> CREATE TABLE IF NOT EXISTS user (
+    -> id SMALLINT,
+    -> username VARCHAR(20),
+    -> age SMALLINT,
+    -> sex ENUM('男','女','保密'),
+    -> email VARCHAR(50),
+    -> addr VARCHAR(200),
+    -> birth YEAR,
+    -> salary FLOAT(8,2),
+    -> tel INT,
+    -> married TINYINT(1) COMMENT '0未婚，非0已婚'
+    -> )ENGINE=INNODB CHARSET=UTF8;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '--字�?注释 COMMENT 注释内�?
+
+CREATE TABLE IF NOT EXISTS user (
+i' at line 1
+mysql> CREATE DATABASE IF NOT EXISTS `siyan` CHARACTER SET 'UTF8';
+Query OK, 1 row affected, 1 warning (0.11 sec)
+
+mysql> USE `siyan`;
+Database changed
+mysql> CREATE TABLE IF NOT EXISTS user (
+    -> id SMALLINT,
+    -> username VARCHAR(20),
+    -> age SMALLINT,
+    -> sex ENUM('男','女','保密'),
+    -> email VARCHAR(50),
+    -> addr VARCHAR(200),
+    -> birth YEAR,
+    -> salary FLOAT(8,2),
+    -> tel INT,
+    -> married TINYINT(1) COMMENT '0未婚，非0已婚'
+    -> )ENGINE=INNODB CHARSET=UTF8;
+Query OK, 0 rows affected, 2 warnings (0.75 sec)
+
+mysql> SHOW WARNINGS;
++---------+------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Level   | Code | Message                                                                                                                                                                     |
++---------+------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Warning | 1300 | Invalid gbk character string: '0\xE6\x9C\xAA\xE5\xA9...'                                                                                                                    |
+| Warning | 3719 | 'utf8' is currently an alias for the character set UTF8MB3, but will be an alias for UTF8MB4 in a future release. Please consider using UTF8MB4 in order to be unambiguous. |
++---------+------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+2 rows in set (0.00 sec)
+
+mysql> SHOW TABLES;
++-----------------+
+| Tables_in_siyan |
++-----------------+
+| user            |
++-----------------+
+1 row in set (0.20 sec)
+
+mysql> CREATE TABLE IF NOT EXISTS course(
+    -> cid TINYINT,
+    -> courseName VARCHAR(50),
+    -> courseDesc VARCHAR(200)
+    -> );
+Query OK, 0 rows affected (0.14 sec)
+
+mysql> SHOW TABLES;
++-----------------+
+| Tables_in_siyan |
++-----------------+
+| course          |
+| user            |
++-----------------+
+2 rows in set (0.00 sec)
+
+mysql> SELECT DATABASE();
++------------+
+| DATABASE() |
++------------+
+| siyan      |
++------------+
+1 row in set (0.00 sec)
+
+mysql> CREATE TABLE IF NOT EXISTS cms_cate(
+    -> cms_cate_id TINYINT,
+    -> cms_cate_name VARCHAR(50),
+    -> cms_cate_desc VARCHAR(200)
+    -> )ENGINE=INNODB CHARSET=UTF8;
+Query OK, 0 rows affected, 1 warning (0.18 sec)
+
+mysql> CREATE TABLE IF NOT EXISTS cms_news(
+    -> cms_news_id INT,
+    -> cms_news_title VARCHAR(50),
+    -> cms_news_article TEXT,
+    -> cms_news_time INT,
+    -> cms_news_clicks INT,
+    -> cms_news_top TINYINT(1) COMMENT'0不置顶，非0置顶'
+    -> )ENGINE=MyISAM CHARSET=UTF8;
+Query OK, 0 rows affected, 2 warnings (0.16 sec)
+
+mysql> SHOW WARNINGS;
++---------+------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Level   | Code | Message                                                                                                                                                                     |
++---------+------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Warning | 1300 | Invalid gbk character string: '0\xE4\xB8\x8D\xE7\xBD...'                                                                                                                    |
+| Warning | 3719 | 'utf8' is currently an alias for the character set UTF8MB3, but will be an alias for UTF8MB4 in a future release. Please consider using UTF8MB4 in order to be unambiguous. |
++---------+------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+2 rows in set (0.00 sec)
+
+mysql> SHOW TABLES;
++-----------------+
+| Tables_in_siyan |
++-----------------+
+| cms_cate        |
+| cms_news        |
+| course          |
+| user            |
++-----------------+
+4 rows in set (0.00 sec)
+
+mysql> desc cms_news;
++------------------+-------------+------+-----+---------+-------+
+| Field            | Type        | Null | Key | Default | Extra |
++------------------+-------------+------+-----+---------+-------+
+| cms_news_id      | int(11)     | YES  |     | NULL    |       |
+| cms_news_title   | varchar(50) | YES  |     | NULL    |       |
+| cms_news_article | text        | YES  |     | NULL    |       |
+| cms_news_time    | int(11)     | YES  |     | NULL    |       |
+| cms_news_clicks  | int(11)     | YES  |     | NULL    |       |
+| cms_news_top     | tinyint(1)  | YES  |     | NULL    |       |
++------------------+-------------+------+-----+---------+-------+
+6 rows in set (0.17 sec)
+
+mysql> DESCRIBE cms_cate;
++---------------+--------------+------+-----+---------+-------+
+| Field         | Type         | Null | Key | Default | Extra |
++---------------+--------------+------+-----+---------+-------+
+| cms_cate_id   | tinyint(4)   | YES  |     | NULL    |       |
+| cms_cate_name | varchar(50)  | YES  |     | NULL    |       |
+| cms_cate_desc | varchar(200) | YES  |     | NULL    |       |
++---------------+--------------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+
+mysql> SHOW COLUMNS FROM user;
++----------+--------------------------+------+-----+---------+-------+
+| Field    | Type                     | Null | Key | Default | Extra |
++----------+--------------------------+------+-----+---------+-------+
+| id       | smallint(6)              | YES  |     | NULL    |       |
+| username | varchar(20)              | YES  |     | NULL    |       |
+| age      | smallint(6)              | YES  |     | NULL    |       |
+| sex      | enum('�','�','保密')       | YES  |     | NULL    |       |
+| email    | varchar(50)              | YES  |     | NULL    |       |
+| addr     | varchar(200)             | YES  |     | NULL    |       |
+| birth    | year(4)                  | YES  |     | NULL    |       |
+| salary   | float(8,2)               | YES  |     | NULL    |       |
+| tel      | int(11)                  | YES  |     | NULL    |       |
+| married  | tinyint(1)               | YES  |     | NULL    |       |
++----------+--------------------------+------+-----+---------+-------+
+10 rows in set (0.01 sec)
+
+mysql> SET MANES UTF-8;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'UTF-8' at line 1
+mysql> SET NANES UTF-8;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'UTF-8' at line 1
+mysql> \s
+--------------
+
+Connection id:		9
+Current database:	siyan
+Current user:		root@localhost
+SSL:			Cipher in use is DHE-RSA-AES128-GCM-SHA256
+Using delimiter:	;
+Server version:		8.0.12 MySQL Community Server - GPL
+Protocol version:	10
+Connection:		localhost via TCP/IP
+Server characterset:	utf8
+Db     characterset:	utf8
+Client characterset:	gbk
+Conn.  characterset:	gbk
+TCP port:		3306
+Uptime:			4 hours 52 min 18 sec
+
+Threads: 2  Questions: 83  Slow queries: 0  Opens: 171  Flush tables: 2  Open tables: 147  Queries per second avg: 0.004
+--------------
+
+mysql> \t

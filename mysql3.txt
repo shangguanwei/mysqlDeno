@@ -1,0 +1,204 @@
+mysql> SHOW DATABASES;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| learn_mysql        |
+| mysql              |
+| performance_schema |
+| siyan              |
++--------------------+
+5 rows in set (0.25 sec)
+
+mysql> SELECT DATABASE();
++------------+
+| DATABASE() |
++------------+
+| siyan      |
++------------+
+1 row in set (0.00 sec)
+
+mysql> SHOW TABLES;
++-----------------+
+| Tables_in_siyan |
++-----------------+
+| cms_cate        |
+| cms_news        |
+| course          |
+| user            |
+| user1           |
++-----------------+
+5 rows in set (0.13 sec)
+
+mysql> SHOW CREATE TABLE user1;
++-------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table | Create Table                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
++-------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| user1 | CREATE TABLE `user1` (
+  `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
+  `username` varchar(20) NOT NULL,
+  `password` char(36) NOT NULL,
+  `email` varchar(50) NOT NULL DEFAULT '384840894@qq.com',
+  `age` tinyint(3) unsigned DEFAULT '18',
+  `sex` enum('男','女','保密') DEFAULT '保密',
+  `addr` varchar(200) DEFAULT NULL,
+  `birth` year(4) DEFAULT NULL,
+  `salary` float(8,2) DEFAULT NULL,
+  `tel` int(11) DEFAULT NULL,
+  `married` tinyint(1) DEFAULT NULL COMMENT '0未婚，非0已婚',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8             |
++-------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+1 row in set (0.09 sec)
+
+mysql> DESC user1;
++----------+----------------------------+------+-----+------------------+----------------+
+| Field    | Type                       | Null | Key | Default          | Extra          |
++----------+----------------------------+------+-----+------------------+----------------+
+| id       | smallint(5) unsigned       | NO   | PRI | NULL             | auto_increment |
+| username | varchar(20)                | NO   |     | NULL             |                |
+| password | char(36)                   | NO   |     | NULL             |                |
+| email    | varchar(50)                | NO   |     | 384840894@qq.com |                |
+| age      | tinyint(3) unsigned        | YES  |     | 18               |                |
+| sex      | enum('男','女','保密')     | YES  |     | 保密             |                |
+| addr     | varchar(200)               | YES  |     | NULL             |                |
+| birth    | year(4)                    | YES  |     | NULL             |                |
+| salary   | float(8,2)                 | YES  |     | NULL             |                |
+| tel      | int(11)                    | YES  |     | NULL             |                |
+| married  | tinyint(1)                 | YES  |     | NULL             |                |
++----------+----------------------------+------+-----+------------------+----------------+
+11 rows in set (0.12 sec)
+
+mysql> ALTER TABLE user1 MODIFY username VARCHAR(50) NOT NULL UNIQUE KEY,MODIFY password CHAR(32) NOT NULL DEFAULT '123qwe';
+Query OK, 0 rows affected (0.51 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> DESC user1;
++----------+----------------------------+------+-----+------------------+----------------+
+| Field    | Type                       | Null | Key | Default          | Extra          |
++----------+----------------------------+------+-----+------------------+----------------+
+| id       | smallint(5) unsigned       | NO   | PRI | NULL             | auto_increment |
+| username | varchar(50)                | NO   | UNI | NULL             |                |
+| password | char(32)                   | NO   |     | 123qwe           |                |
+| email    | varchar(50)                | NO   |     | 384840894@qq.com |                |
+| age      | tinyint(3) unsigned        | YES  |     | 18               |                |
+| sex      | enum('男','女','保密')     | YES  |     | 保密             |                |
+| addr     | varchar(200)               | YES  |     | NULL             |                |
+| birth    | year(4)                    | YES  |     | NULL             |                |
+| salary   | float(8,2)                 | YES  |     | NULL             |                |
+| tel      | int(11)                    | YES  |     | NULL             |                |
+| married  | tinyint(1)                 | YES  |     | NULL             |                |
++----------+----------------------------+------+-----+------------------+----------------+
+11 rows in set (0.00 sec)
+
+mysql> INSERT INTO user1 VALUES(1,sgw,123qwe,20);
+ERROR 1136 (21S01): Column count doesn't match value count at row 1
+mysql> INSERT INTO user1 VALUES(1,'sgw','123qwe',,20);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ',20)' at line 1
+mysql> INSERT INTO user1 VALUES(1,'sgw','123qwe','384840894@qq.com',20);
+ERROR 1136 (21S01): Column count doesn't match value count at row 1
+mysql> 
+mysql> INSERT INTO user1 VALUES(1,'sgw','123qwe','384840894@qq.com',20,'男','address',1993,1000.123,17788568721,0);
+ERROR 1264 (22003): Out of range value for column 'tel' at row 1
+mysql> ALTER TABLE user1 MODIFY tel VARCHAR(50); 
+Query OK, 0 rows affected (0.14 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO user1 VALUES(1,'sgw','123qwe','384840894@qq.com',20,'男','address',1993,1000.123,'17788568721',0);
+Query OK, 1 row affected (0.08 sec)
+
+mysql> SELECT * FROM user1;
++----+----------+----------+------------------+------+------+---------+-------+---------+-------------+---------+
+| id | username | password | email            | age  | sex  | addr    | birth | salary  | tel         | married |
++----+----------+----------+------------------+------+------+---------+-------+---------+-------------+---------+
+|  1 | sgw      | 123qwe   | 384840894@qq.com |   20 | 男   | address |  1993 | 1000.12 | 17788568721 |       0 |
++----+----------+----------+------------------+------+------+---------+-------+---------+-------------+---------+
+1 row in set (0.04 sec)
+
+mysql> INSERT INTO user1(id,username,password) VALUES(2,'wsy',123456);
+Query OK, 1 row affected (0.12 sec)
+
+mysql> SELECT * FROM user1;
++----+----------+----------+------------------+------+--------+---------+-------+---------+-------------+---------+
+| id | username | password | email            | age  | sex    | addr    | birth | salary  | tel         | married |
++----+----------+----------+------------------+------+--------+---------+-------+---------+-------------+---------+
+|  1 | sgw      | 123qwe   | 384840894@qq.com |   20 | 男     | address |  1993 | 1000.12 | 17788568721 |       0 |
+|  2 | wsy      | 123456   | 384840894@qq.com |   18 | 保密   | NULL    |  NULL |    NULL | NULL        |    NULL |
++----+----------+----------+------------------+------+--------+---------+-------+---------+-------------+---------+
+2 rows in set (0.00 sec)
+
+mysql> INSERT INTO user1(id,username) VALUES(3,'zgl')，(4,'lh');
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '，(4,'lh')' at line 1
+mysql> INSERT INTO user1(password,username) VALUES('zguolong'),('lihuan');
+ERROR 1136 (21S01): Column count doesn't match value count at row 1
+mysql> INSERT INTO user1 VALUES(1,'zgl','123qwe','zgl@qq.com',20,'男','address',1993,1000.123,'138',0)，(1,'lh','123qwe','lh@qq.com',20,'男','address',1993,1000.123,'139',0);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '，(1,'lh','123qwe','lh@qq.com',20,'男','address',1993,1000.123,'139',0)' at line 1
+mysql> INSERT INTO user1 VALUES(1,'zgl','123qwe','zgl@qq.com',20,'男','address',1993,1000.123,'138',0);
+ERROR 1062 (23000): Duplicate entry '1' for key 'PRIMARY'
+mysql> INSERT INTO user1 VALUES(3,'zgl','123qwe','zgl@qq.com',20,'男','address',1993,1000.123,'138',0)，(4,'lh','123qwe','lh@qq.com',20,'男','address',1993,1000.123,'139',0);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '，(4,'lh','123qwe','lh@qq.com',20,'男','address',1993,1000.123,'139',0)' at line 1
+mysql> INSERT INTO user1 VALUES(3,'zgl','123qwe','zgl@qq.com',20,'男','address',1993,1000.123,'138',0);
+Query OK, 1 row affected (0.04 sec)
+
+mysql> INSERT INTO user1 VALUES(4,'lh','123qwe','lh@qq.com',20,'男','address',1993,1000.123,'139',0);
+Query OK, 1 row affected (0.03 sec)
+
+mysql> SELECT * FORM user1;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'FORM user1' at line 1
+mysql> SELECT * FROM user1;
++----+----------+----------+------------------+------+--------+---------+-------+---------+-------------+---------+
+| id | username | password | email            | age  | sex    | addr    | birth | salary  | tel         | married |
++----+----------+----------+------------------+------+--------+---------+-------+---------+-------------+---------+
+|  1 | sgw      | 123qwe   | 384840894@qq.com |   20 | 男     | address |  1993 | 1000.12 | 17788568721 |       0 |
+|  2 | wsy      | 123456   | 384840894@qq.com |   18 | 保密   | NULL    |  NULL |    NULL | NULL        |    NULL |
+|  3 | zgl      | 123qwe   | zgl@qq.com       |   20 | 男     | address |  1993 | 1000.12 | 138         |       0 |
+|  4 | lh       | 123qwe   | lh@qq.com        |   20 | 男     | address |  1993 | 1000.12 | 139         |       0 |
++----+----------+----------+------------------+------+--------+---------+-------+---------+-------------+---------+
+4 rows in set (0.00 sec)
+
+mysql> INSERT INTO SET id=6,username='sgw1';
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'SET id=6,username='sgw1'' at line 1
+mysql> INSERT INTO SET id='10',username='sgw1',password='123456';
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'SET id='10',username='sgw1',password='123456'' at line 1
+mysql> INSERT INTO user1 SET id='10',username='sgw1',password='123456';
+Query OK, 1 row affected (0.06 sec)
+
+mysql> CREATE TABLE IF NOT EXIST testUser(
+    -> id TINYINT UNSIGNED PRIMARY KEY AUTO_INCREMENT
+    -> username VARCHAR(50) NOT NULL UNIQUE KEY
+    -> password CHAR(32) NOT NULL
+    -> );
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'EXIST testUser(
+id TINYINT UNSIGNED PRIMARY KEY AUTO_INCREMENT
+username VARCHAR(' at line 1
+mysql> CREATE TABLE IF NOT EXISTS testUser(
+    -> id TINYINT UNSIGNED KEY AUTO_INCREMENT
+    -> username VARCHAR(50) NOT NULL UNIQUE
+    -> password CHAR(32) NOT NULL
+    -> )ENGINE=INNODB CHARSET=UTF8;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'username VARCHAR(50) NOT NULL UNIQUE
+password CHAR(32) NOT NULL
+)ENGINE=INNODB C' at line 3
+mysql> CREATE TABLE IF NOT EXISTS testUser(
+    -> id TINYINT UNSIGNED KEY AUTO_INCREMENT
+    -> username VARCHAR(50) UNIQUE NOT NULL 
+    -> password CHAR(32) NOT NULL
+    -> )ENGINE=INNODB CHARSET=UTF8;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'username VARCHAR(50) UNIQUE NOT NULL 
+password CHAR(32) NOT NULL
+)ENGINE=INNODB ' at line 3
+mysql> CREATE TABLE IF NOT EXISTS testUser(
+    -> id TINYINT UNSIGNED KEY AUTO_INCREMENT
+    -> username VARCHAR(50) UNIQUE NOT NULL 
+    -> password CHAR(32) NOT NULL
+    -> ^C
+mysql> 
+mysql> CREATE TABLE IF NOT EXISTS testUser(
+    -> id TINYINT UNSIGNED KEY AUTO_INCREMENT
+    -> username VARCHAR(50) NOT NULL 
+    -> password CHAR(32) NOT NULL
+    -> )ENGINE=INNODB CHARSET=UTF8;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'username VARCHAR(50) NOT NULL 
+password CHAR(32) NOT NULL
+)ENGINE=INNODB CHARSET' at line 3
+mysql> quit;

@@ -1,0 +1,929 @@
+    -> CREATE TABLE IF NOT EXISTS testUser(
+    -> id TINYINT UNSIGNED KEY AUTO_INCREMENT，
+    -> username VARCHAR(50) NOT NULL UNIQUE
+    -> password CHAR(32) NOT NULL
+    -> )ENGINE=INNODB CHARSET=UTF8;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '\D D:orkspace\mysqlDemo\mysql4.txt
+
+
+
+CREATE TABLE IF NOT EXISTS testUser(
+id TI' at line 1
+mysql> SHOW TABLES;
++-----------------+
+| Tables_in_siyan |
++-----------------+
+| cms_cate        |
+| cms_news        |
+| course          |
+| user            |
+| user1           |
++-----------------+
+5 rows in set (0.37 sec)
+
+mysql> CREATE TABLE IF NOT EXISTS testUser(
+    -> id TINYINT UNSIGNED KEY AUTO_INCREMENT，
+    -> username VARCHAR(50) NOT NULL UNIQUE
+    -> password CHAR(32) NOT NULL
+    -> )ENGINE=INNODB CHARSET=UTF8;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'AUTO_INCREMENT，
+username VARCHAR(50) NOT NULL UNIQUE
+password CHAR(32) NOT NUL' at line 2
+mysql> CREATE TABLE IF NOT EXISTS testUser(
+    -> id TINYINT UNSIGNED KEY AUTO_INCREMENT,
+    -> username VARCHAR(50) NOT NULL UNIQUE,
+    -> password CHAR(32) NOT NULL,
+    -> )ENGINE=INNODB CHARSET=UTF8;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ')ENGINE=INNODB CHARSET=UTF8' at line 5
+mysql> 
+mysql> 
+mysql> 
+mysql> CREATE TABLE IF NOT EXISTS testUser(
+    -> id TINYINT UNSIGNED KEY AUTO_INCREMENT,
+    -> username VARCHAR(50) NOT NULL UNIQUE,
+    -> password CHAR(32) NOT NULL,
+    -> )ENGINE=INNODB CHARSET=UTF8
+    -> ;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ')ENGINE=INNODB CHARSET=UTF8' at line 5
+mysql> CREATE TABLE IF NOT EXISTS testUser(
+    -> id TINYINT UNSIGNED KEY AUTO_INCREMENT,
+    -> username VARCHAR(50) NOT NULL UNIQUE,
+    -> password CHAR(32) NOT NULL,
+    -> );
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ')' at line 5
+mysql> CREATE TABLE IF NOT EXISTS testUser(
+    -> id TINYINT UNSIGNED KEY AUTO_INCREMENT,
+    -> username VARCHAR(50) NOT NULL UNIQUE,
+    -> password CHAR(32) NOT NULL
+    -> )ENGINE=INNODB CHARSET=UTF8
+    -> ;
+Query OK, 0 rows affected, 1 warning (0.56 sec)
+
+mysql> CREATE TABLE IF NOT EXISTS testUser1(
+    -> id TINYINT UNSIGNED KEY AUTO_INCREMENT,
+    -> username1 VARCHAR(50) NOT NULL UNIQUE,
+    -> password1 CHAR(32) NOT NULL
+    -> )ENGINE=INNODB CHARSET=UTF8;
+Query OK, 0 rows affected, 1 warning (0.18 sec)
+
+mysql> INSERT INTO testUser VALUES(1,'aaa','123');
+Query OK, 1 row affected (0.12 sec)
+
+mysql> INSERT testUser(username,password) VALUES('bbb','456');
+Query OK, 1 row affected (0.06 sec)
+
+mysql> SELECT * FORM testUser;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'FORM testUser' at line 1
+mysql> SELECT * FROM testUser;
++----+----------+----------+
+| id | username | password |
++----+----------+----------+
+|  1 | aaa      | 123      |
+|  2 | bbb      | 456      |
++----+----------+----------+
+2 rows in set (0.00 sec)
+
+mysql> INSERT testUser(username,password) VALUES('ccc','789'),'ddd','000');
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''ddd','000')' at line 1
+mysql> INSERT testUser(username,password) VALUES('ccc','789'),('ddd','000');
+Query OK, 2 rows affected (0.09 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+
+mysql> INSERT testUser VALUES('eee','111');
+ERROR 1136 (21S01): Column count doesn't match value count at row 1
+mysql> SELECT * FROM testUser;
++----+----------+----------+
+| id | username | password |
++----+----------+----------+
+|  1 | aaa      | 123      |
+|  2 | bbb      | 456      |
+|  3 | ccc      | 789      |
+|  4 | ddd      | 000      |
++----+----------+----------+
+4 rows in set (0.00 sec)
+
+mysql> INSERT testUser VALUES(10,'eee','111');
+Query OK, 1 row affected (0.01 sec)
+
+mysql> INSERT testUser VALUES(11,'fff','333'),(12,'ggg','444');
+Query OK, 2 rows affected (0.10 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+
+mysql> INSERT testUser1(username,password) VALUES('sgw','111');
+ERROR 1054 (42S22): Unknown column 'username' in 'field list'
+mysql> INSERT testUser1(username1,password1) VALUES('sgw','111');
+Query OK, 1 row affected (0.03 sec)
+
+mysql> INSERT testUser1(username1,password1) SELECT username,password FROM testUser WHERE id=10;
+Query OK, 1 row affected (0.04 sec)
+Records: 1  Duplicates: 0  Warnings: 0
+
+mysql> SELECT * FROM testUser1;
++----+-----------+-----------+
+| id | username1 | password1 |
++----+-----------+-----------+
+|  1 | sgw       | 111       |
+|  2 | eee       | 111       |
++----+-----------+-----------+
+2 rows in set (0.00 sec)
+
+mysql> INSERT testUser1(username1,password1) SELECT username,password FROM testUser;
+ERROR 1062 (23000): Duplicate entry 'eee' for key 'username1'
+mysql> INSERT testUser1(username1,password1) SELECT username,password FROM testUser WHERE id!=10;
+Query OK, 6 rows affected (0.13 sec)
+Records: 6  Duplicates: 0  Warnings: 0
+
+mysql> SELECT * FROM testUser1;
++----+-----------+-----------+
+| id | username1 | password1 |
++----+-----------+-----------+
+|  1 | sgw       | 111       |
+|  2 | eee       | 111       |
+| 10 | aaa       | 123       |
+| 11 | bbb       | 456       |
+| 12 | ccc       | 789       |
+| 13 | ddd       | 000       |
+| 14 | fff       | 333       |
+| 15 | ggg       | 444       |
++----+-----------+-----------+
+8 rows in set (0.00 sec)
+
+mysql> UPDATE testUser1 SET password1='bbb' WHERE id=11;
+Query OK, 1 row affected (0.02 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> SELECT * FROM testUser1;
++----+-----------+-----------+
+| id | username1 | password1 |
++----+-----------+-----------+
+|  1 | sgw       | 111       |
+|  2 | eee       | 111       |
+| 10 | aaa       | 123       |
+| 11 | bbb       | bbb       |
+| 12 | ccc       | 789       |
+| 13 | ddd       | 000       |
+| 14 | fff       | 333       |
+| 15 | ggg       | 444       |
++----+-----------+-----------+
+8 rows in set (0.00 sec)
+
+mysql> UPDATE testUser1 SET password1='123qwe',username1='sgw';
+ERROR 1062 (23000): Duplicate entry 'sgw' for key 'username1'
+mysql> UPDATE testUser1 SET password1='123qwe';
+Query OK, 8 rows affected (0.07 sec)
+Rows matched: 8  Changed: 8  Warnings: 0
+
+mysql> SELECT * FROM testUser1;
++----+-----------+-----------+
+| id | username1 | password1 |
++----+-----------+-----------+
+|  1 | sgw       | 123qwe    |
+|  2 | eee       | 123qwe    |
+| 10 | aaa       | 123qwe    |
+| 11 | bbb       | 123qwe    |
+| 12 | ccc       | 123qwe    |
+| 13 | ddd       | 123qwe    |
+| 14 | fff       | 123qwe    |
+| 15 | ggg       | 123qwe    |
++----+-----------+-----------+
+8 rows in set (0.00 sec)
+
+mysql> DELETE FROM testUser1 WHERE id>12;
+Query OK, 3 rows affected (0.12 sec)
+
+mysql> SELECT * FROM testUser1;
++----+-----------+-----------+
+| id | username1 | password1 |
++----+-----------+-----------+
+|  1 | sgw       | 123qwe    |
+|  2 | eee       | 123qwe    |
+| 10 | aaa       | 123qwe    |
+| 11 | bbb       | 123qwe    |
+| 12 | ccc       | 123qwe    |
++----+-----------+-----------+
+5 rows in set (0.00 sec)
+
+mysql> TRUNCATE TABLE testUser1;
+Query OK, 0 rows affected (0.32 sec)
+
+mysql> SELECT * FROM testUser1;
+Empty set (0.00 sec)
+
+mysql> INSERT testUser1 SET username1='sgw',password1='sgw';
+Query OK, 1 row affected (0.07 sec)
+
+mysql> SELECT * FROM testUser1;
++----+-----------+-----------+
+| id | username1 | password1 |
++----+-----------+-----------+
+|  1 | sgw       | sgw       |
++----+-----------+-----------+
+1 row in set (0.00 sec)
+
+mysql> DELETE FROM testUser1;
+Query OK, 1 row affected (0.11 sec)
+
+mysql> SELECT * FROM testUser1;
+Empty set (0.00 sec)
+
+mysql> INSERT testUser1 SET username1='sgw',password1='sgw';
+Query OK, 1 row affected (0.07 sec)
+
+mysql> SELECT * FROM testUser1;
++----+-----------+-----------+
+| id | username1 | password1 |
++----+-----------+-----------+
+|  2 | sgw       | sgw       |
++----+-----------+-----------+
+1 row in set (0.00 sec)
+
+mysql> DROP learn_mysql
+    -> ;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'learn_mysql' at line 1
+mysql> DROP DATABASE learn_mysql;
+Query OK, 0 rows affected (0.25 sec)
+
+mysql> SHOW DATABASES;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| performance_schema |
+| siyan              |
++--------------------+
+4 rows in set (0.00 sec)
+
+mysql> --创建cms数据库
+    -> CREATE DATABASE IF NOT EXISTS cms DEFAULT CHARACTER SET = UTF8;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '--创建cms数据库
+CREATE DATABASE IF NOT EXISTS cms DEFAULT CHARACTER SET = U' at line 1
+mysql> USE cms;
+ERROR 1049 (42000): Unknown database 'cms'
+mysql> 
+mysql> --创建管理员表
+    -> CREATE TABLE cms_admin(
+    -> id TINYINT UNSIGNED AUTO_INCREMENT KEY,
+    -> username VARCHAR(50) NOT NULL UNIQUE,
+    -> password CHAR(32) NOT NULL,
+    -> email VARCHAR(50) NOT  NULL DEFAULT 'admin@qq.com',
+    -> role ENUM('普通管理员','超级管理员') DEFAULT '普通管理员'
+    -> );
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '--创建管理员表
+CREATE TABLE cms_admin(
+id TINYINT UNSIGNED AUTO_INCREMENT ' at line 1
+mysql> 
+mysql> INSERT cms_admin(username,password,email,role) VALUES('admin','admin','admin@qq.com',2);
+ERROR 1146 (42S02): Table 'siyan.cms_admin' doesn't exist
+mysql> INSERT cms_admin(username,password) VALUES('sgw','sgw'),
+    -> ('wsy','wsy'),
+    -> ('zgl','zgl'),
+    -> ('test','test');
+ERROR 1146 (42S02): Table 'siyan.cms_admin' doesn't exist
+mysql> 
+mysql> 
+mysql> --创建分类表
+    -> CREATE TABLE IF NOT EXISTS cms_cate(
+    -> id TINYINT UNSIGNED AUTO_INCREMENT KEY,
+    -> cateName VARCHAR(50) NOT NULL UNIQUE,
+    -> cateDesc VARCHAR(200) DEFAULT '无'
+    -> );
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '--创建分类表
+CREATE TABLE IF NOT EXISTS cms_cate(
+id TINYINT UNSIGNED AUTO_' at line 1
+mysql> 
+mysql> INSERT cms_cate(cateName,cateDesc) VALUES('国内新闻','聚焦国内新闻')，
+    -> ('国际新闻','聚焦国际新闻')，
+    -> ('游戏新闻','聚焦游戏新闻')，
+    -> ('军事新闻','聚焦军事新闻')，
+    -> ('娱乐新闻','聚焦娱乐新闻');
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '，
+('国际新闻','聚焦国际新闻')，
+('游戏新闻','聚焦游戏新闻' at line 1
+mysql> 
+mysql> 
+mysql> 
+mysql> --创建新闻表
+    -> CREATE TABLE IF NOT EXISTS cms_news(
+    -> id INT UNSIGNED AUTO_INCREMENT KEY,
+    -> title VARCHAR(50) NOT NULL UNIQUE,
+    -> content TEXT,
+    -> clickNum INT UNSIGNED DEFAULT 0,
+    -> pubTime INT UNSIGNED,
+    -> cId TINYINT UNSIGNED NOT NULL COMMENT '新闻所属分类，对应cms_cate中id',
+    -> aId TINYINT UNSIGNED NOT NULL COMMENT '那个管理员发布的，对应cms_admin中id',
+    -> );
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '--创建新闻表
+CREATE TABLE IF NOT EXISTS cms_news(
+id INT UNSIGNED AUTO_INCR' at line 1
+mysql> 
+mysql> INSERT cms_news(title,content,pubTime,cId,aId) VALUES('国内新闻1','国内新闻具体内容如下...',1419818508,1,1),
+    -> ('国际新闻1','国际新闻具体内容如下...',1419818508,1,2),
+    -> ('游戏新闻1','游戏新闻具体内容如下...',1419818508,1,3),
+    -> ('军事新闻1','军事新闻具体内容如下...',1419818508,2,4),
+    -> ('娱乐新闻1','娱乐新闻具体内容如下...',1419818508,2,5);
+ERROR 1054 (42S22): Unknown column 'title' in 'field list'
+mysql> 
+mysql> 
+mysql> --创建省份表
+    -> CREATE TABLE IF NOT EXISTS provinces(
+    -> id TINYINT UNSIGNED AUTO_INCREMENT KEY,
+    -> proName VARCHAR(20) NOT NULL UNIQUE
+    -> );
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '--创建省份表
+CREATE TABLE IF NOT EXISTS provinces(
+id TINYINT UNSIGNED AUTO' at line 1
+mysql> 
+mysql> INSERT INTO provinces(proName) VALUES('北京')
+    -> ('上海'),
+    -> ('广州'),
+    -> ('深圳'),
+    -> ('杭州');
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '('上海'),
+('广州'),
+('深圳'),
+('杭州')' at line 2
+mysql> 
+mysql> 
+mysql> --创建用户表
+    -> CREATE TABLE IF NOT EXISTS cms_user (
+    -> id INT UNSIGNED AUTO_INCREMENT KEY,
+    -> username VARCHAR(20) NOT NULL UNIQUE,
+    -> password CHAR(32) NOT NULL,
+    -> email VARCHAR(50) NOT NULL DEFAULT 'user@qq.com',
+    -> regTime INT UNSIGNED NOT NULL,
+    -> face VARCHAR(100) NOT NULL DEFAULT 'user.jpg',
+    -> proId TINYINT UNSIGNED NOT NULL COMMENT '用户所在省份'
+    -> )ENGINE=INNODB CHARSET=UTF8;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '--创建用户表
+CREATE TABLE IF NOT EXISTS cms_user (
+id INT UNSIGNED AUTO_INC' at line 1
+mysql> 
+mysql> INSERT cms_user(username,password,regTime,proId) 
+    -> VALUES('张三','zhangsan',1419811708,1),
+    -> ('李四','lisi',1419811708,2),
+    -> ('王五','wangwu',1419811708,3),
+    -> ('赵六','zhaoliu',1419811708,4),
+    -> ('沈七','shenqi',1419811708,5);
+ERROR 1146 (42S02): Table 'siyan.cms_user' doesn't exist
+mysql> CREATE DATABASE IF NOT EXISTS cms DEFAULT CHARACTER SET = UTF8;
+Query OK, 1 row affected, 1 warning (0.07 sec)
+
+mysql> USE cms;
+Database changed
+mysql> 
+mysql> CREATE TABLE cms_admin(
+    -> id TINYINT UNSIGNED AUTO_INCREMENT KEY,
+    -> username VARCHAR(50) NOT NULL UNIQUE,
+    -> password CHAR(32) NOT NULL,
+    -> email VARCHAR(50) NOT  NULL DEFAULT 'admin@qq.com',
+    -> role ENUM('普通管理员','超级管理员') DEFAULT '普通管理员'
+    -> );
+Query OK, 0 rows affected (0.28 sec)
+
+mysql> 
+mysql> INSERT cms_admin(username,password,email,role) VALUES('admin','admin','admin@qq.com',2);
+Query OK, 1 row affected (0.04 sec)
+
+mysql> INSERT cms_admin(username,password) VALUES('sgw','sgw'),
+    -> ('wsy','wsy'),
+    -> ('zgl','zgl'),
+    -> ('test','test');
+Query OK, 4 rows affected (0.01 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+mysql> 
+mysql> 
+mysql> CREATE TABLE IF NOT EXISTS cms_cate(
+    -> id TINYINT UNSIGNED AUTO_INCREMENT KEY,
+    -> cateName VARCHAR(50) NOT NULL UNIQUE,
+    -> cateDesc VARCHAR(200) DEFAULT '无'
+    -> );
+Query OK, 0 rows affected (0.14 sec)
+
+mysql> 
+mysql> INSERT cms_cate(cateName,cateDesc) VALUES('国内新闻','聚焦国内新闻')，
+    -> ('国际新闻','聚焦国际新闻')，
+    -> ('游戏新闻','聚焦游戏新闻')，
+    -> ('军事新闻','聚焦军事新闻')，
+    -> ('娱乐新闻','聚焦娱乐新闻');
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '，
+('国际新闻','聚焦国际新闻')，
+('游戏新闻','聚焦游戏新闻' at line 1
+mysql> 
+mysql> 
+mysql> CREATE TABLE IF NOT EXISTS cms_news(
+    -> id INT UNSIGNED AUTO_INCREMENT KEY,
+    -> title VARCHAR(50) NOT NULL UNIQUE,
+    -> content TEXT,
+    -> clickNum INT UNSIGNED DEFAULT 0,
+    -> pubTime INT UNSIGNED,
+    -> cId TINYINT UNSIGNED NOT NULL COMMENT '新闻所属分类，对应cms_cate中id',
+    -> aId TINYINT UNSIGNED NOT NULL COMMENT '那个管理员发布的，对应cms_admin中id',
+    -> );
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ')' at line 9
+mysql> 
+mysql> INSERT cms_news(title,content,pubTime,cId,aId) VALUES('国内新闻1','国内新闻具体内容如下...',1419818508,1,1),
+    -> ('国际新闻1','国际新闻具体内容如下...',1419818508,1,2),
+    -> ('游戏新闻1','游戏新闻具体内容如下...',1419818508,1,3),
+    -> ('军事新闻1','军事新闻具体内容如下...',1419818508,2,4),
+    -> ('娱乐新闻1','娱乐新闻具体内容如下...',1419818508,2,5);
+ERROR 1146 (42S02): Table 'cms.cms_news' doesn't exist
+mysql> 
+mysql> 
+mysql> CREATE TABLE IF NOT EXISTS provinces(
+    -> id TINYINT UNSIGNED AUTO_INCREMENT KEY,
+    -> proName VARCHAR(20) NOT NULL UNIQUE
+    -> );
+Query OK, 0 rows affected (0.06 sec)
+
+mysql> 
+mysql> INSERT INTO provinces(proName) VALUES('北京')
+    -> ('上海'),
+    -> ('广州'),
+    -> ('深圳'),
+    -> ('杭州');
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '('上海'),
+('广州'),
+('深圳'),
+('杭州')' at line 2
+mysql> 
+mysql> 
+mysql> CREATE TABLE IF NOT EXISTS cms_user (
+    -> id INT UNSIGNED AUTO_INCREMENT KEY,
+    -> username VARCHAR(20) NOT NULL UNIQUE,
+    -> password CHAR(32) NOT NULL,
+    -> email VARCHAR(50) NOT NULL DEFAULT 'user@qq.com',
+    -> regTime INT UNSIGNED NOT NULL,
+    -> face VARCHAR(100) NOT NULL DEFAULT 'user.jpg',
+    -> proId TINYINT UNSIGNED NOT NULL COMMENT '用户所在省份'
+    -> )ENGINE=INNODB CHARSET=UTF8;
+Query OK, 0 rows affected, 1 warning (0.14 sec)
+
+mysql> 
+mysql> INSERT cms_user(username,password,regTime,proId) 
+    -> VALUES('张三','zhangsan',1419811708,1),
+    -> ('李四','lisi',1419811708,2),
+    -> ('王五','wangwu',1419811708,3),
+    -> ('赵六','zhaoliu',1419811708,4),
+    -> ^C
+mysql> 
+mysql> 
+mysql> 
+mysql> 
+mysql> 
+mysql> INSERT cms_cate(cateName,cateDesc) VALUES('国内新闻','聚焦国内新闻'),
+    -> ('国际新闻','聚焦国际新闻'),
+    -> ('游戏新闻','聚焦游戏新闻'),
+    -> ('军事新闻','聚焦军事新闻'),
+    -> ('娱乐新闻','聚焦娱乐新闻');
+Query OK, 5 rows affected (0.13 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> 
+mysql> 
+mysql> CREATE TABLE IF NOT EXISTS cms_news(
+    -> id INT UNSIGNED AUTO_INCREMENT KEY,
+    -> title VARCHAR(50) NOT NULL UNIQUE,
+    -> content TEXT,
+    -> clickNum INT UNSIGNED DEFAULT 0,
+    -> pubTime INT UNSIGNED,
+    -> cId TINYINT UNSIGNED NOT NULL COMMENT '新闻所属分类，对应cms_cate中id',
+    -> aId TINYINT UNSIGNED NOT NULL COMMENT '那个管理员发布的，对应cms_admin中id',
+    -> );
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ')' at line 9
+mysql> 
+mysql> INSERT cms_news(title,content,pubTime,cId,aId) VALUES('国内新闻1','国内新闻具体内容如下...',1419818508,1,1),
+    -> ('国际新闻1','国际新闻具体内容如下...',1419818508,1,2),
+    -> ('游戏新闻1','游戏新闻具体内容如下...',1419818508,1,3),
+    -> ('军事新闻1','军事新闻具体内容如下...',1419818508,2,4),
+    -> ('娱乐新闻1','娱乐新闻具体内容如下...',1419818508,2,5);
+ERROR 1146 (42S02): Table 'cms.cms_news' doesn't exist
+mysql> 
+mysql> 
+mysql> 
+mysql> INSERT INTO provinces(proName) VALUES('北京'),
+    -> ('上海'),
+    -> ('广州'),
+    -> ('深圳'),
+    -> ('杭州');
+Query OK, 5 rows affected (0.00 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> 
+mysql> 
+mysql> INSERT cms_user(username,password,regTime,proId) 
+    -> VALUES('张三','zhangsan',1419811708,1),
+    -> ('李四','lisi',1419811708,2),
+    -> ('王五','wangwu',1419811708,3),
+    -> ('赵六','zhaoliu',1419811708,4),
+    -> ^C
+mysql> 
+mysql> 
+mysql> 
+mysql> CREATE TABLE IF NOT EXISTS cms_news(
+    -> id INT UNSIGNED AUTO_INCREMENT KEY,
+    -> title VARCHAR(50) NOT NULL UNIQUE,
+    -> content TEXT,
+    -> clickNum INT UNSIGNED DEFAULT 0,
+    -> pubTime INT UNSIGNED,
+    -> cId TINYINT UNSIGNED NOT NULL COMMENT '新闻所属分类，对应cms_cate中id',
+    -> aId TINYINT UNSIGNED NOT NULL COMMENT '那个管理员发布的，对应cms_admin中id'
+    -> );
+Query OK, 0 rows affected (0.06 sec)
+
+mysql> 
+mysql> INSERT cms_news(title,content,pubTime,cId,aId) VALUES('国内新闻1','国内新闻具体内容如下...',1419818508,1,1),
+    -> ('国际新闻1','国际新闻具体内容如下...',1419818508,1,2),
+    -> ('游戏新闻1','游戏新闻具体内容如下...',1419818508,1,3),
+    -> ('军事新闻1','军事新闻具体内容如下...',1419818508,2,4),
+    -> ('娱乐新闻1','娱乐新闻具体内容如下...',1419818508,2,5);
+Query OK, 5 rows affected (0.02 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> 
+mysql> 
+mysql> INSERT cms_user(username,password,regTime,proId) 
+    -> VALUES('张三','zhangsan',1419811708,1),
+    -> ('李四','lisi',1419811708,2),
+    -> ('王五','wangwu',1419811708,3),
+    -> ('赵六','zhaoliu',1419811708,4),
+    -> ('沈七','shenqi',1419811708,5);
+Query OK, 5 rows affected (0.08 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> 
+mysql> 
+mysql> CREATE DATABASE IF NOT EXISTS cms1 DEFAULT CHARACTER SET = UTF8;
+Query OK, 1 row affected, 1 warning (0.07 sec)
+
+mysql> USE cms1;
+Database changed
+mysql> 
+mysql> CREATE TABLE cms_admin(
+    -> id TINYINT UNSIGNED AUTO_INCREMENT KEY,
+    -> username VARCHAR(50) NOT NULL UNIQUE,
+    -> password CHAR(32) NOT NULL,
+    -> email VARCHAR(50) NOT  NULL DEFAULT 'admin@qq.com',
+    -> role ENUM('普通管理员','超级管理员') DEFAULT '普通管理员'
+    -> );
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> 
+mysql> INSERT cms_admin(username,password,email,role) VALUES('admin','admin','admin@qq.com',2);
+Query OK, 1 row affected (0.01 sec)
+
+mysql> INSERT cms_admin(username,password) VALUES('sgw','sgw'),
+    -> ('wsy','wsy'),
+    -> ('zgl','zgl'),
+    -> ('test','test');
+Query OK, 4 rows affected (0.01 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+mysql> 
+mysql> CREATE TABLE IF NOT EXISTS cms_cate(
+    -> id TINYINT UNSIGNED AUTO_INCREMENT KEY,
+    -> cateName VARCHAR(50) NOT NULL UNIQUE,
+    -> cateDesc VARCHAR(200) DEFAULT '无'
+    -> );
+Query OK, 0 rows affected (0.07 sec)
+
+mysql> 
+mysql> INSERT cms_cate(cateName,cateDesc) VALUES('国内新闻','聚焦国内新闻'),
+    -> ('国际新闻','聚焦国际新闻'),
+    -> ('游戏新闻','聚焦游戏新闻'),
+    -> ('军事新闻','聚焦军事新闻'),
+    -> ('娱乐新闻','聚焦娱乐新闻');
+Query OK, 5 rows affected (0.04 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> 
+mysql> CREATE TABLE IF NOT EXISTS cms_news(
+    -> id INT UNSIGNED AUTO_INCREMENT KEY,
+    -> title VARCHAR(50) NOT NULL UNIQUE,
+    -> content TEXT,
+    -> clickNum INT UNSIGNED DEFAULT 0,
+    -> pubTime INT UNSIGNED,
+    -> cId TINYINT UNSIGNED NOT NULL COMMENT '新闻所属分类，对应cms_cate中id',
+    -> aId TINYINT UNSIGNED NOT NULL COMMENT '那个管理员发布的，对应cms_admin中id',
+    -> );
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ')' at line 9
+mysql> 
+mysql> INSERT cms_news(title,content,pubTime,cId,aId) VALUES('国内新闻1','国内新闻具体内容如下...',1419818508,1,1),
+    -> ('国际新闻1','国际新闻具体内容如下...',1419818508,1,2),
+    -> ('游戏新闻1','游戏新闻具体内容如下...',1419818508,1,3),
+    -> ('军事新闻1','军事新闻具体内容如下...',1419818508,2,4),
+    -> ('娱乐新闻1','娱乐新闻具体内容如下...',1419818508,2,5);
+ERROR 1146 (42S02): Table 'cms1.cms_news' doesn't exist
+mysql> 
+mysql> CREATE TABLE IF NOT EXISTS provinces(
+    -> id TINYINT UNSIGNED AUTO_INCREMENT KEY,
+    -> proName VARCHAR(20) NOT NULL UNIQUE
+    -> );
+Query OK, 0 rows affected (0.04 sec)
+
+mysql> 
+mysql> INSERT INTO provinces(proName) VALUES('北京'),
+    -> ('上海'),
+    -> ('广州'),
+    -> ('深圳'),
+    -> ('杭州');
+Query OK, 5 rows affected (0.03 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> 
+mysql> CREATE TABLE IF NOT EXISTS cms_user (
+    -> id INT UNSIGNED AUTO_INCREMENT KEY,
+    -> username VARCHAR(20) NOT NULL UNIQUE,
+    -> password CHAR(32) NOT NULL,
+    -> email VARCHAR(50) NOT NULL DEFAULT 'user@qq.com',
+    -> regTime INT UNSIGNED NOT NULL,
+    -> face VARCHAR(100) NOT NULL DEFAULT 'user.jpg',
+    -> proId TINYINT UNSIGNED NOT NULL COMMENT '用户所在省份'
+    -> )ENGINE=INNODB CHARSET=UTF8;
+Query OK, 0 rows affected, 1 warning (0.10 sec)
+
+mysql> 
+mysql> INSERT cms_user(username,password,regTime,proId) 
+    -> VALUES('张三','zhangsan',1419811708,1),
+    -> ('李四','lisi',1419811708,2),
+    -> ('王五','wangwu',1419811708,3),
+    -> ('赵六','zhaoliu',1419811708,4),
+    -> ('沈七','shenqi',1419811708,5);
+Query OK, 5 rows affected (0.01 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> DROP DATABASE cms1;
+Query OK, 4 rows affected (0.36 sec)
+
+mysql> DROP DATABASE cms;
+Query OK, 5 rows affected (0.32 sec)
+
+mysql> CREATE DATABASE IF NOT EXISTS cms DEFAULT CHARACTER SET = UTF8;
+Query OK, 1 row affected, 1 warning (0.04 sec)
+
+mysql> USE cms;
+Database changed
+mysql> 
+mysql> CREATE TABLE cms_admin(
+    -> id TINYINT UNSIGNED AUTO_INCREMENT KEY,
+    -> username VARCHAR(50) NOT NULL UNIQUE,
+    -> password CHAR(32) NOT NULL,
+    -> email VARCHAR(50) NOT  NULL DEFAULT 'admin@qq.com',
+    -> role ENUM('普通管理员','超级管理员') DEFAULT '普通管理员'
+    -> );
+Query OK, 0 rows affected (0.08 sec)
+
+mysql> 
+mysql> INSERT cms_admin(username,password,email,role) VALUES('admin','admin','admin@qq.com',2);
+Query OK, 1 row affected (0.00 sec)
+
+mysql> INSERT cms_admin(username,password) VALUES('sgw','sgw'),
+    -> ('wsy','wsy'),
+    -> ('zgl','zgl'),
+    -> ('test','test');
+Query OK, 4 rows affected (0.00 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+mysql> 
+mysql> CREATE TABLE IF NOT EXISTS cms_cate(
+    -> id TINYINT UNSIGNED AUTO_INCREMENT KEY,
+    -> cateName VARCHAR(50) NOT NULL UNIQUE,
+    -> cateDesc VARCHAR(200) DEFAULT '无'
+    -> );
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> 
+mysql> INSERT cms_cate(cateName,cateDesc) VALUES('国内新闻','聚焦国内新闻'),
+    -> ('国际新闻','聚焦国际新闻'),
+    -> ('游戏新闻','聚焦游戏新闻'),
+    -> ('军事新闻','聚焦军事新闻'),
+    -> ('娱乐新闻','聚焦娱乐新闻');
+Query OK, 5 rows affected (0.00 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> 
+mysql> CREATE TABLE IF NOT EXISTS cms_news(
+    -> id INT UNSIGNED AUTO_INCREMENT KEY,
+    -> title VARCHAR(50) NOT NULL UNIQUE,
+    -> content TEXT,
+    -> clickNum INT UNSIGNED DEFAULT 0,
+    -> pubTime INT UNSIGNED,
+    -> cId TINYINT UNSIGNED NOT NULL COMMENT '新闻所属分类，对应cms_cate中id',
+    -> aId TINYINT UNSIGNED NOT NULL COMMENT '那个管理员发布的，对应cms_admin中id'
+    -> );
+Query OK, 0 rows affected (0.09 sec)
+
+mysql> 
+mysql> INSERT cms_news(title,content,pubTime,cId,aId) VALUES('国内新闻1','国内新闻具体内容如下...',1419818508,1,1),
+    -> ('国际新闻1','国际新闻具体内容如下...',1419818508,1,2),
+    -> ('游戏新闻1','游戏新闻具体内容如下...',1419818508,1,3),
+    -> ('军事新闻1','军事新闻具体内容如下...',1419818508,2,4),
+    -> ('娱乐新闻1','娱乐新闻具体内容如下...',1419818508,2,5);
+Query OK, 5 rows affected (0.01 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> 
+mysql> CREATE TABLE IF NOT EXISTS provinces(
+    -> id TINYINT UNSIGNED AUTO_INCREMENT KEY,
+    -> proName VARCHAR(20) NOT NULL UNIQUE
+    -> );
+Query OK, 0 rows affected (0.06 sec)
+
+mysql> 
+mysql> INSERT INTO provinces(proName) VALUES('北京'),
+    -> ('上海'),
+    -> ('广州'),
+    -> ('深圳'),
+    -> ('杭州');
+Query OK, 5 rows affected (0.00 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> 
+mysql> CREATE TABLE IF NOT EXISTS cms_user (
+    -> id INT UNSIGNED AUTO_INCREMENT KEY,
+    -> username VARCHAR(20) NOT NULL UNIQUE,
+    -> password CHAR(32) NOT NULL,
+    -> email VARCHAR(50) NOT NULL DEFAULT 'user@qq.com',
+    -> regTime INT UNSIGNED NOT NULL,
+    -> face VARCHAR(100) NOT NULL DEFAULT 'user.jpg',
+    -> proId TINYINT UNSIGNED NOT NULL COMMENT '用户所在省份'
+    -> )ENGINE=INNODB CHARSET=UTF8;
+Query OK, 0 rows affected, 1 warning (0.06 sec)
+
+mysql> 
+mysql> INSERT cms_user(username,password,regTime,proId) 
+    -> VALUES('张三','zhangsan',1419811708,1),
+    -> ('李四','lisi',1419811708,2),
+    -> ('王五','wangwu',1419811708,3),
+    -> ('赵六','zhaoliu',1419811708,4),
+    -> ('沈七','shenqi',1419811708,5);
+Query OK, 5 rows affected (0.04 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> SHOW DATABASES;
++--------------------+
+| Database           |
++--------------------+
+| cms                |
+| information_schema |
+| mysql              |
+| performance_schema |
+| siyan              |
++--------------------+
+5 rows in set (0.00 sec)
+
+mysql> USE CMS;
+Database changed
+mysql> SHOW TABLES;
++---------------+
+| Tables_in_cms |
++---------------+
+| cms_admin     |
+| cms_cate      |
+| cms_news      |
+| cms_user      |
+| provinces     |
++---------------+
+5 rows in set (0.00 sec)
+
+mysql> SELECT * FROM cms_admin;
++----+----------+----------+--------------+-----------------+
+| id | username | password | email        | role            |
++----+----------+----------+--------------+-----------------+
+|  1 | admin    | admin    | admin@qq.com | 超级管理员      |
+|  2 | sgw      | sgw      | admin@qq.com | 普通管理员      |
+|  3 | wsy      | wsy      | admin@qq.com | 普通管理员      |
+|  4 | zgl      | zgl      | admin@qq.com | 普通管理员      |
+|  5 | test     | test     | admin@qq.com | 普通管理员      |
++----+----------+----------+--------------+-----------------+
+5 rows in set (0.00 sec)
+
+mysql> SELECT id,username FROM cms_admin;
++----+----------+
+| id | username |
++----+----------+
+|  1 | admin    |
+|  2 | sgw      |
+|  5 | test     |
+|  3 | wsy      |
+|  4 | zgl      |
++----+----------+
+5 rows in set (0.00 sec)
+
+mysql> SELECT id,username,role FROM cms.cms_admin;
++----+----------+-----------------+
+| id | username | role            |
++----+----------+-----------------+
+|  1 | admin    | 超级管理员      |
+|  2 | sgw      | 普通管理员      |
+|  3 | wsy      | 普通管理员      |
+|  4 | zgl      | 普通管理员      |
+|  5 | test     | 普通管理员      |
++----+----------+-----------------+
+5 rows in set (0.00 sec)
+
+mysql> SELECT cms_admin.id,cms_admin.username,cms_admin.role FROM cms.cms_admin;
++----+----------+-----------------+
+| id | username | role            |
++----+----------+-----------------+
+|  1 | admin    | 超级管理员      |
+|  2 | sgw      | 普通管理员      |
+|  3 | wsy      | 普通管理员      |
+|  4 | zgl      | 普通管理员      |
+|  5 | test     | 普通管理员      |
++----+----------+-----------------+
+5 rows in set (0.00 sec)
+
+mysql> SELECT id,username FROM cms_user WHERE id = 5;
++----+----------+
+| id | username |
++----+----------+
+|  5 | 沈七     |
++----+----------+
+1 row in set (0.00 sec)
+
+mysql> SELECT id,username FROM cms_user;
++----+----------+
+| id | username |
++----+----------+
+|  1 | 张三     |
+|  2 | 李四     |
+|  5 | 沈七     |
+|  3 | 王五     |
+|  4 | 赵六     |
++----+----------+
+5 rows in set (0.00 sec)
+
+mysql> SELECT * FROM cms_user;
++----+----------+----------+-------------+------------+----------+-------+
+| id | username | password | email       | regTime    | face     | proId |
++----+----------+----------+-------------+------------+----------+-------+
+|  1 | 张三     | zhangsan | user@qq.com | 1419811708 | user.jpg |     1 |
+|  2 | 李四     | lisi     | user@qq.com | 1419811708 | user.jpg |     2 |
+|  3 | 王五     | wangwu   | user@qq.com | 1419811708 | user.jpg |     3 |
+|  4 | 赵六     | zhaoliu  | user@qq.com | 1419811708 | user.jpg |     4 |
+|  5 | 沈七     | shenqi   | user@qq.com | 1419811708 | user.jpg |     5 |
++----+----------+----------+-------------+------------+----------+-------+
+5 rows in set (0.00 sec)
+
+mysql> SELECT id,username FROM cms_user WHERE id IS NULL;
+Empty set (0.00 sec)
+
+mysql> SELECT id,username FROM cms_user WHERE id BETWEEN 2 AND 4;
++----+----------+
+| id | username |
++----+----------+
+|  2 | 李四     |
+|  3 | 王五     |
+|  4 | 赵六     |
++----+----------+
+3 rows in set (0.05 sec)
+
+mysql> SELECT id,username FROM cms_user WHERE id IN (1,3,5);
++----+----------+
+| id | username |
++----+----------+
+|  1 | 张三     |
+|  5 | 沈七     |
+|  3 | 王五     |
++----+----------+
+3 rows in set (0.03 sec)
+
+mysql> SELECT id,username FROM cms_user WHERE username IN ('张三','王五');
++----+----------+
+| id | username |
++----+----------+
+|  1 | 张三     |
+|  3 | 王五     |
++----+----------+
+2 rows in set (0.00 sec)
+
+mysql> SELECT * FROM cms_user WHERE username LIKE '%王%';
++----+----------+----------+-------------+------------+----------+-------+
+| id | username | password | email       | regTime    | face     | proId |
++----+----------+----------+-------------+------------+----------+-------+
+|  3 | 王五     | wangwu   | user@qq.com | 1419811708 | user.jpg |     3 |
++----+----------+----------+-------------+------------+----------+-------+
+1 row in set (0.04 sec)
+
+mysql> SELECT * FROM cms_admin WHERE username='sgw' AND password='sgw';
++----+----------+----------+--------------+-----------------+
+| id | username | password | email        | role            |
++----+----------+----------+--------------+-----------------+
+|  2 | sgw      | sgw      | admin@qq.com | 普通管理员      |
++----+----------+----------+--------------+-----------------+
+1 row in set (0.00 sec)
+
+mysql> SELECT * FROM cms_user WHERE username LIKE '张_' OR password IS 'wangwu';
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''wangwu'' at line 1
+mysql> SELECT * FROM cms_user WHERE username LIKE '张_' OR password IN ('wangwu');
++----+----------+----------+-------------+------------+----------+-------+
+| id | username | password | email       | regTime    | face     | proId |
++----+----------+----------+-------------+------------+----------+-------+
+|  1 | 张三     | zhangsan | user@qq.com | 1419811708 | user.jpg |     1 |
+|  3 | 王五     | wangwu   | user@qq.com | 1419811708 | user.jpg |     3 |
++----+----------+----------+-------------+------------+----------+-------+
+2 rows in set (0.03 sec)
+
+mysql> \t;
