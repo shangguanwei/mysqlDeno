@@ -205,6 +205,13 @@ VALUES('张三','zhangsan',1419811708,1),
 ('赵六','zhaoliu',1419811708,4),
 ('沈七','shenqi',1419811708,5);
 
+INSERT cms_user(username,password,regTime,proId) 
+VALUES('张三三','zhangsansan',1419811708,1),
+('李四思思','lisisi',1419811708,2),
+('王呜呜','wangwuwu',1419811708,3),
+('赵溜溜','zhaoliuliu',1419811708,4),
+('沈琪琪','shenqiqi',1419811708,5);
+
 --查询语句
 SELECT * FROM cms_admin;
 SELECT id,username FROM cms_admin;
@@ -230,6 +237,76 @@ SELECT * FROM cms_user WHERE username LIKE '%王%';
 SELECT * FROM cms_admin WHERE username='sgw' AND password='sgw';
 SELECT * FROM cms_user WHERE username LIKE '张_' OR password IN ('wangwu');
 
+--GROUP BY
+SELECT * FROM cms_user GROUP BY proId;
 
+--给表新建字段别忘写TABLE
+ALTER TABLE cms_user ADD sex ENUM('男','女','未填写') NOT NULL DEFAULT '未填写' AFTER password;
+UPDATE cms_user SET sex = '男' WHERE id IN (1,2);
 
+--错误！
+SELECT * FROM cms_user GROUP BY sex; 
+--需搭配聚合函数
+SELECT sum(proId),sex FROM cms_user GROUP BY sex;
+SELECT max(proId),sex FROM cms_user GROUP BY sex;
+SELECT min(proId),sex FROM cms_user GROUP BY sex;
+SELECT avg(proId),sex FROM cms_user GROUP BY sex;
+--first/last不支持
+SELECT first(proId),sex FROM cms_user GROUP BY sex;
+SELECT last(proId),sex FROM cms_user GROUP BY sex;
+--注意是count 不是cont！
+SELECT count(proId),sex FROM cms_user GROUP BY sex;
+
+--GROUP_CONCAT()
+SELECT sex,count(username),GROUP_CONCAT(username) FROM cms_user GROUP BY sex;
+
+ALTER TABLE cms_user ADD age TINYINT UNSIGNED;
+ALTER TABLE cms_user MODIFY age TINYINT UNSIGNED AFTER sex;
+
+--批量更新
+UPDATE cms_user
+	SET age = CASE id
+		WHEN 1 THEN 10
+		WHEN 2 THEN 15
+		WHEN 3 THEN 20
+		WHEN 4 THEN 25
+		WHEN 5 THEN 30
+		WHEN 6 THEN 10
+		WHEN 7 THEN 15
+		WHEN 8 THEN 20
+		WHEN 9 THEN 25
+		WHEN 10 THEN 30
+	END
+WHERE id IN (1,2,3,4,5,6,7,8,9,10);
+
+--HAVING子句
+SELECT sex,GROUP_CONCAT(username),COUNT(username),MAX(age),SUM(age) FROM cms_user GROUP BY sex HAVING COUNT(*)>2;
+
+--ORDER BY子句
+SELECT * FROM cms_user WHERE id > 5 ORDER BY age DESC;
+--随机排序
+SELECT age FROM cms_user ORDER BY RAND();
+
+--LIMIT 偏移量从0开始
+SELECT * FROM cms_user ORDER BY id DESC LIMIT 3;
+SELECT * FROM cms_user LIMIT 0,3;
+SELECT * FROM cms_user LIMIT 3,5;
+
+--更新数据 使用LIMIT只允许一个参数
+UPDATE cms_user SET email = '123@qq.com' WHERE id < 3 LIMIT 5;
+DELETE FROM cms_user WHERE sex = '未填写' ORDER BY id DESC LIMIT 1;
+
+--多表查询
+SELECT u.id,u.username,p.proName FROM cms_user AS u,provinces AS p WHERE u.proId = p.id;
+SELECT u.id,u.username,p.proName FROM cms_user AS u JOIN provinces AS p ON u.proId = p.id;
+SELECT GROUP_CONCAT(u.id),GROUP_CONCAT(u.username),GROUP_CONCAT(u.sex),p.proName FROM cms_user AS u JOIN provinces AS p ON u.proId = p.id WHERE u.sex = '未填写' GROUP BY p.proName HAVING COUNT(*) >= 2 ORDER BY GROUP_CONCAT(u.id) DESC LIMIT 0,2;
+
+--三张表
+SELECT n.title,c.cateName,a.username FROM cms_news AS n 
+JOIN cms_cate AS c ON n.cId = c.id 
+JOIN cms_admin AS a ON n.aId = a.id;
+
+--外连接查询，左外连接以左侧表为主表，，右外连接以右侧表为主表，可查询出主表的NULL值
+INSERT provinces(proName) VALUES ('山西');
+SELECT u.id,u.username,p.proName FROM cms_user AS u RIGHT JOIN provinces AS p ON u.proId = p.id;
 

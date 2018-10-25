@@ -1,0 +1,1032 @@
+mysql> SELECT DATABASE();
++------------+
+| DATABASE() |
++------------+
+| cms        |
++------------+
+1 row in set (0.05 sec)
+
+mysql> SHOW TABES;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'TABES' at line 1
+mysql> SHOW TABLES;
++---------------+
+| Tables_in_cms |
++---------------+
+| cms_admin     |
+| cms_cate      |
+| cms_news      |
+| cms_user      |
+| provinces     |
++---------------+
+5 rows in set (0.32 sec)
+
+mysql> DESC cms_admin;
++----------+-------------------------------------------+------+-----+-----------------+----------------+
+| Field    | Type                                      | Null | Key | Default         | Extra          |
++----------+-------------------------------------------+------+-----+-----------------+----------------+
+| id       | tinyint(3) unsigned                       | NO   | PRI | NULL            | auto_increment |
+| username | varchar(50)                               | NO   | UNI | NULL            |                |
+| password | char(32)                                  | NO   |     | NULL            |                |
+| email    | varchar(50)                               | NO   |     | admin@qq.com    |                |
+| role     | enum('普通管理员','超级管理员')           | YES  |     | 普通管理员      |                |
++----------+-------------------------------------------+------+-----+-----------------+----------------+
+5 rows in set (0.13 sec)
+
+mysql> SHOW CREATE TABLE cms_admin;
++-----------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table     | Create Table                                                                                                                                                                                                                                                                                                                                                                                            |
++-----------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| cms_admin | CREATE TABLE `cms_admin` (
+  `id` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
+  `username` varchar(50) NOT NULL,
+  `password` char(32) NOT NULL,
+  `email` varchar(50) NOT NULL DEFAULT 'admin@qq.com',
+  `role` enum('普通管理员','超级管理员') DEFAULT '普通管理员',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `username` (`username`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8                |
++-----------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+1 row in set (0.08 sec)
+
+mysql> SELECT * FROM cms_user;
++----+----------+----------+-------------+------------+----------+-------+
+| id | username | password | email       | regTime    | face     | proId |
++----+----------+----------+-------------+------------+----------+-------+
+|  1 | 张三     | zhangsan | user@qq.com | 1419811708 | user.jpg |     1 |
+|  2 | 李四     | lisi     | user@qq.com | 1419811708 | user.jpg |     2 |
+|  3 | 王五     | wangwu   | user@qq.com | 1419811708 | user.jpg |     3 |
+|  4 | 赵六     | zhaoliu  | user@qq.com | 1419811708 | user.jpg |     4 |
+|  5 | 沈七     | shenqi   | user@qq.com | 1419811708 | user.jpg |     5 |
++----+----------+----------+-------------+------------+----------+-------+
+5 rows in set (0.08 sec)
+
+mysql> ALTER cms_user ADD sex ENUM('男','女','未填写') NOT NULL DEFAULT 3 AFTER password;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'cms_user ADD sex ENUM('男','女','未填写') NOT NULL DEFAULT 3 AFTER password' at line 1
+mysql> ALTER TABLE cms_user ADD sex ENUM('男','女','未填写') NOT NULL DEFAULT 3 AFTER password;
+ERROR 1067 (42000): Invalid default value for 'sex'
+mysql> ALTER TABLE cms_user ADD sex ENUM('男','女','未填写') NOT NULL DEFAULT '未填写' AFTER password;
+Query OK, 0 rows affected (0.70 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> SELECT * FROM cms_user;
++----+----------+----------+-----------+-------------+------------+----------+-------+
+| id | username | password | sex       | email       | regTime    | face     | proId |
++----+----------+----------+-----------+-------------+------------+----------+-------+
+|  1 | 张三     | zhangsan | 未填写    | user@qq.com | 1419811708 | user.jpg |     1 |
+|  2 | 李四     | lisi     | 未填写    | user@qq.com | 1419811708 | user.jpg |     2 |
+|  3 | 王五     | wangwu   | 未填写    | user@qq.com | 1419811708 | user.jpg |     3 |
+|  4 | 赵六     | zhaoliu  | 未填写    | user@qq.com | 1419811708 | user.jpg |     4 |
+|  5 | 沈七     | shenqi   | 未填写    | user@qq.com | 1419811708 | user.jpg |     5 |
++----+----------+----------+-----------+-------------+------------+----------+-------+
+5 rows in set (0.00 sec)
+
+mysql> UPDATE cms_user SET sex = '男' WHERE id IN (1,2);
+Query OK, 2 rows affected (0.17 sec)
+Rows matched: 2  Changed: 2  Warnings: 0
+
+mysql> SELECT * FROM cms_user;
++----+----------+----------+-----------+-------------+------------+----------+-------+
+| id | username | password | sex       | email       | regTime    | face     | proId |
++----+----------+----------+-----------+-------------+------------+----------+-------+
+|  1 | 张三     | zhangsan | 男        | user@qq.com | 1419811708 | user.jpg |     1 |
+|  2 | 李四     | lisi     | 男        | user@qq.com | 1419811708 | user.jpg |     2 |
+|  3 | 王五     | wangwu   | 未填写    | user@qq.com | 1419811708 | user.jpg |     3 |
+|  4 | 赵六     | zhaoliu  | 未填写    | user@qq.com | 1419811708 | user.jpg |     4 |
+|  5 | 沈七     | shenqi   | 未填写    | user@qq.com | 1419811708 | user.jpg |     5 |
++----+----------+----------+-----------+-------------+------------+----------+-------+
+5 rows in set (0.00 sec)
+
+mysql> SELECT * FROM cms_user GROUP BY sex;
+ERROR 1055 (42000): Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'cms.cms_user.id' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+mysql> DESC cms_user;
++----------+-------------------------------+------+-----+-------------+----------------+
+| Field    | Type                          | Null | Key | Default     | Extra          |
++----------+-------------------------------+------+-----+-------------+----------------+
+| id       | int(10) unsigned              | NO   | PRI | NULL        | auto_increment |
+| username | varchar(20)                   | NO   | UNI | NULL        |                |
+| password | char(32)                      | NO   |     | NULL        |                |
+| sex      | enum('男','女','未填写')      | NO   |     | 未填写      |                |
+| email    | varchar(50)                   | NO   |     | user@qq.com |                |
+| regTime  | int(10) unsigned              | NO   |     | NULL        |                |
+| face     | varchar(100)                  | NO   |     | user.jpg    |                |
+| proId    | tinyint(3) unsigned           | NO   |     | NULL        |                |
++----------+-------------------------------+------+-----+-------------+----------------+
+8 rows in set (0.00 sec)
+
+mysql> SHOW CREATE TABLE cms_user;
++----------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table    | Create Table                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
++----------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| cms_user | CREATE TABLE `cms_user` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `username` varchar(20) NOT NULL,
+  `password` char(32) NOT NULL,
+  `sex` enum('男','女','未填写') NOT NULL DEFAULT '未填写',
+  `email` varchar(50) NOT NULL DEFAULT 'user@qq.com',
+  `regTime` int(10) unsigned NOT NULL,
+  `face` varchar(100) NOT NULL DEFAULT 'user.jpg',
+  `proId` tinyint(3) unsigned NOT NULL COMMENT '用户所在省份',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `username` (`username`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8               |
++----------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+1 row in set (0.00 sec)
+
+mysql> SELECT username,password FROM cms_user GROUP BY sex;
+ERROR 1055 (42000): Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'cms.cms_user.username' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+mysql> SELECT * FROM cms_user;
++----+----------+----------+-----------+-------------+------------+----------+-------+
+| id | username | password | sex       | email       | regTime    | face     | proId |
++----+----------+----------+-----------+-------------+------------+----------+-------+
+|  1 | 张三     | zhangsan | 男        | user@qq.com | 1419811708 | user.jpg |     1 |
+|  2 | 李四     | lisi     | 男        | user@qq.com | 1419811708 | user.jpg |     2 |
+|  3 | 王五     | wangwu   | 未填写    | user@qq.com | 1419811708 | user.jpg |     3 |
+|  4 | 赵六     | zhaoliu  | 未填写    | user@qq.com | 1419811708 | user.jpg |     4 |
+|  5 | 沈七     | shenqi   | 未填写    | user@qq.com | 1419811708 | user.jpg |     5 |
++----+----------+----------+-----------+-------------+------------+----------+-------+
+5 rows in set (0.00 sec)
+
+mysql> SELECT username,password FROM cms_user GROUP BY proId;
+ERROR 1055 (42000): Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'cms.cms_user.username' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+mysql> SELECT * FROM cms_user WHERE id > 3 GROUP BY sex;
+ERROR 1055 (42000): Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'cms.cms_user.id' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+mysql> SELECT * FROM cms_user WHERE id > 3 GROUP BY face;
+ERROR 1055 (42000): Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'cms.cms_user.id' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+mysql> SELECT * FROM cms_user WHERE id > 3 GROUP BY username;
++----+----------+----------+-----------+-------------+------------+----------+-------+
+| id | username | password | sex       | email       | regTime    | face     | proId |
++----+----------+----------+-----------+-------------+------------+----------+-------+
+|  4 | 赵六     | zhaoliu  | 未填写    | user@qq.com | 1419811708 | user.jpg |     4 |
+|  5 | 沈七     | shenqi   | 未填写    | user@qq.com | 1419811708 | user.jpg |     5 |
++----+----------+----------+-----------+-------------+------------+----------+-------+
+2 rows in set (0.00 sec)
+
+mysql> SELECT password FROM cms_user  GROUP BY username;
++----------+
+| password |
++----------+
+| zhangsan |
+| lisi     |
+| wangwu   |
+| zhaoliu  |
+| shenqi   |
++----------+
+5 rows in set (0.00 sec)
+
+mysql> SELECT cont(username),cont(email) FROM cms_user GROUP BY face;
+ERROR 1305 (42000): FUNCTION cms.cont does not exist
+mysql> SELECT sum(username) FROM cms_user GROUP BY face;
++---------------+
+| sum(username) |
++---------------+
+|             0 |
++---------------+
+1 row in set, 5 warnings (0.14 sec)
+
+mysql> SELECT face,cont(proId)FROM cms_user GROUP BY face;
+ERROR 1305 (42000): FUNCTION cms.cont does not exist
+mysql> SELECT sum(proId),face FROM cms_user GROUP BY face;
++------------+----------+
+| sum(proId) | face     |
++------------+----------+
+|         15 | user.jpg |
++------------+----------+
+1 row in set (0.06 sec)
+
+mysql> SELECT sum(proId),sex FROM cms_user GROUP BY sex;
++------------+-----------+
+| sum(proId) | sex       |
++------------+-----------+
+|          3 | 男        |
+|         12 | 未填写    |
++------------+-----------+
+2 rows in set (0.00 sec)
+
+mysql> SELECT first(username),sex FROM cms_user GROUP BY sex;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '(username),sex FROM cms_user GROUP BY sex' at line 1
+mysql> SELECT cont(proId),sex FROM cms_user GROUP BY sex;
+ERROR 1305 (42000): FUNCTION cms.cont does not exist
+mysql> SELECT sum(max),sex FROM cms_user GROUP BY sex;
+ERROR 1054 (42S22): Unknown column 'max' in 'field list'
+mysql> SELECT max(proId),sex FROM cms_user GROUP BY sex;
++------------+-----------+
+| max(proId) | sex       |
++------------+-----------+
+|          2 | 男        |
+|          5 | 未填写    |
++------------+-----------+
+2 rows in set (0.06 sec)
+
+mysql> SELECT min(proId),sex FROM cms_user GROUP BY sex;
++------------+-----------+
+| min(proId) | sex       |
++------------+-----------+
+|          1 | 男        |
+|          3 | 未填写    |
++------------+-----------+
+2 rows in set (0.01 sec)
+
+mysql> SELECT avg(proId),sex FROM cms_user GROUP BY sex;
++------------+-----------+
+| avg(proId) | sex       |
++------------+-----------+
+|     1.5000 | 男        |
+|     4.0000 | 未填写    |
++------------+-----------+
+2 rows in set (0.00 sec)
+
+mysql> SELECT first(proId),sex FROM cms_user GROUP BY sex;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '(proId),sex FROM cms_user GROUP BY sex' at line 1
+mysql> SELECT count(proId),sex FROM cms_user GROUP BY sex;
++--------------+-----------+
+| count(proId) | sex       |
++--------------+-----------+
+|            2 | 男        |
+|            3 | 未填写    |
++--------------+-----------+
+2 rows in set (0.00 sec)
+
+mysql> SELECT count(proId),sex FROM cms_user GROUP BY sex\G;
+*************************** 1. row ***************************
+count(proId): 2
+         sex: 男
+*************************** 2. row ***************************
+count(proId): 3
+         sex: 未填写
+2 rows in set (0.00 sec)
+
+ERROR: 
+No query specified
+
+mysql> SELECT count(proId),sex FROM cms_user GROUP BY sex \G;
+*************************** 1. row ***************************
+count(proId): 2
+         sex: 男
+*************************** 2. row ***************************
+count(proId): 3
+         sex: 未填写
+2 rows in set (0.00 sec)
+
+ERROR: 
+No query specified
+
+mysql> SELECT sex,GROUP_CONCAT(username) FROM cms_user GROUP BY sex;
++-----------+------------------------+
+| sex       | GROUP_CONCAT(username) |
++-----------+------------------------+
+| 男        | 张三,李四              |
+| 未填写    | 王五,赵六,沈七         |
++-----------+------------------------+
+2 rows in set (0.02 sec)
+
+mysql> SELECT sex,count(username),GROUP_CONCAT(username) FROM cms_user GROUP BY sex;
++-----------+-----------------+------------------------+
+| sex       | count(username) | GROUP_CONCAT(username) |
++-----------+-----------------+------------------------+
+| 男        |               2 | 张三,李四              |
+| 未填写    |               3 | 王五,赵六,沈七         |
++-----------+-----------------+------------------------+
+2 rows in set (0.00 sec)
+
+mysql> SELECT sex,count(username),GROUP_CONCAT(username) FROM cms_user GROUP BY sex;
++-----------+-----------------+------------------------+
+| sex       | count(username) | GROUP_CONCAT(username) |
++-----------+-----------------+------------------------+
+| 男        |               2 | 张三,李四              |
+| 未填写    |               3 | 王五,赵六,沈七         |
++-----------+-----------------+------------------------+
+2 rows in set (0.00 sec)
+
+mysql> SELECT sex,count(username),GROUP_CONCAT(username) FROM cms_user GROUP BY sex\G;
+*************************** 1. row ***************************
+                   sex: 男
+       count(username): 2
+GROUP_CONCAT(username): 张三,李四
+*************************** 2. row ***************************
+                   sex: 未填写
+       count(username): 3
+GROUP_CONCAT(username): 王五,赵六,沈七
+2 rows in set (0.00 sec)
+
+ERROR: 
+No query specified
+
+mysql> ALTER TABLE cms_user ADD age TINYINT UNSIGNED;
+Query OK, 0 rows affected (0.09 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> SELECT * FROM cms_user;
++----+----------+----------+-----------+-------------+------------+----------+-------+------+
+| id | username | password | sex       | email       | regTime    | face     | proId | age  |
++----+----------+----------+-----------+-------------+------------+----------+-------+------+
+|  1 | 张三     | zhangsan | 男        | user@qq.com | 1419811708 | user.jpg |     1 | NULL |
+|  2 | 李四     | lisi     | 男        | user@qq.com | 1419811708 | user.jpg |     2 | NULL |
+|  3 | 王五     | wangwu   | 未填写    | user@qq.com | 1419811708 | user.jpg |     3 | NULL |
+|  4 | 赵六     | zhaoliu  | 未填写    | user@qq.com | 1419811708 | user.jpg |     4 | NULL |
+|  5 | 沈七     | shenqi   | 未填写    | user@qq.com | 1419811708 | user.jpg |     5 | NULL |
++----+----------+----------+-----------+-------------+------------+----------+-------+------+
+5 rows in set (0.00 sec)
+
+mysql> SELECT * FROM cms_user;
++----+----------+----------+-----------+-------------+------------+----------+-------+------+
+| id | username | password | sex       | email       | regTime    | face     | proId | age  |
++----+----------+----------+-----------+-------------+------------+----------+-------+------+
+|  1 | 张三     | zhangsan | 男        | user@qq.com | 1419811708 | user.jpg |     1 | NULL |
+|  2 | 李四     | lisi     | 男        | user@qq.com | 1419811708 | user.jpg |     2 | NULL |
+|  3 | 王五     | wangwu   | 未填写    | user@qq.com | 1419811708 | user.jpg |     3 | NULL |
+|  4 | 赵六     | zhaoliu  | 未填写    | user@qq.com | 1419811708 | user.jpg |     4 | NULL |
+|  5 | 沈七     | shenqi   | 未填写    | user@qq.com | 1419811708 | user.jpg |     5 | NULL |
++----+----------+----------+-----------+-------------+------------+----------+-------+------+
+5 rows in set (0.00 sec)
+
+mysql> ALTER TABLE cms_user MODIFY age TINYINT UNSIGNED AFTER sex;
+Query OK, 0 rows affected (0.42 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> SELECT * FROM cms_user;
++----+----------+----------+-----------+------+-------------+------------+----------+-------+
+| id | username | password | sex       | age  | email       | regTime    | face     | proId |
++----+----------+----------+-----------+------+-------------+------------+----------+-------+
+|  1 | 张三     | zhangsan | 男        | NULL | user@qq.com | 1419811708 | user.jpg |     1 |
+|  2 | 李四     | lisi     | 男        | NULL | user@qq.com | 1419811708 | user.jpg |     2 |
+|  3 | 王五     | wangwu   | 未填写    | NULL | user@qq.com | 1419811708 | user.jpg |     3 |
+|  4 | 赵六     | zhaoliu  | 未填写    | NULL | user@qq.com | 1419811708 | user.jpg |     4 |
+|  5 | 沈七     | shenqi   | 未填写    | NULL | user@qq.com | 1419811708 | user.jpg |     5 |
++----+----------+----------+-----------+------+-------------+------------+----------+-------+
+5 rows in set (0.00 sec)
+
+mysql> UPDATE cms_user SET age = 1,2,3,4,5;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '2,3,4,5' at line 1
+mysql> UPDATE cms_user SET age = (1,2,3,4,5);
+ERROR 1241 (21000): Operand should contain 1 column(s)
+mysql> UPDATE cms_user
+    -> 	SET age = CASE id
+    -> 		WHEN 1 THEN 10
+    -> 		WHEN 2 THEN 15
+    -> 		WHEN 3 THEN 20
+    -> 		WHEN 4 THEN 25
+    -> 		WHEN 5 THEN 30
+    -> 	END
+    -> WHERE id IN (1,2,3,4,5);
+Query OK, 5 rows affected (0.06 sec)
+Rows matched: 5  Changed: 5  Warnings: 0
+
+mysql> SELECT * FROM cms_user;
++----+----------+----------+-----------+------+-------------+------------+----------+-------+
+| id | username | password | sex       | age  | email       | regTime    | face     | proId |
++----+----------+----------+-----------+------+-------------+------------+----------+-------+
+|  1 | 张三     | zhangsan | 男        |   10 | user@qq.com | 1419811708 | user.jpg |     1 |
+|  2 | 李四     | lisi     | 男        |   15 | user@qq.com | 1419811708 | user.jpg |     2 |
+|  3 | 王五     | wangwu   | 未填写    |   20 | user@qq.com | 1419811708 | user.jpg |     3 |
+|  4 | 赵六     | zhaoliu  | 未填写    |   25 | user@qq.com | 1419811708 | user.jpg |     4 |
+|  5 | 沈七     | shenqi   | 未填写    |   30 | user@qq.com | 1419811708 | user.jpg |     5 |
++----+----------+----------+-----------+------+-------------+------------+----------+-------+
+5 rows in set (0.00 sec)
+
+mysql> INSERT cms_user(username,password,regTime,proId) 
+    -> VALUES('张三三','zhangsansan',1419811708,1),
+    -> ('李四思思','lisisi',1419811708,2),
+    -> ('王呜呜','wangwuwu',1419811708,3),
+    -> ('赵溜溜','zhaoliuliu',1419811708,4),
+    -> ('沈琪琪','shenqiqi',1419811708,5);
+Query OK, 5 rows affected (0.08 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> SELECT * FROM cms_user;
++----+--------------+-------------+-----------+------+-------------+------------+----------+-------+
+| id | username     | password    | sex       | age  | email       | regTime    | face     | proId |
++----+--------------+-------------+-----------+------+-------------+------------+----------+-------+
+|  1 | 张三         | zhangsan    | 男        |   10 | user@qq.com | 1419811708 | user.jpg |     1 |
+|  2 | 李四         | lisi        | 男        |   15 | user@qq.com | 1419811708 | user.jpg |     2 |
+|  3 | 王五         | wangwu      | 未填写    |   20 | user@qq.com | 1419811708 | user.jpg |     3 |
+|  4 | 赵六         | zhaoliu     | 未填写    |   25 | user@qq.com | 1419811708 | user.jpg |     4 |
+|  5 | 沈七         | shenqi      | 未填写    |   30 | user@qq.com | 1419811708 | user.jpg |     5 |
+|  6 | 张三三       | zhangsansan | 未填写    | NULL | user@qq.com | 1419811708 | user.jpg |     1 |
+|  7 | 李四思思     | lisisi      | 未填写    | NULL | user@qq.com | 1419811708 | user.jpg |     2 |
+|  8 | 王呜呜       | wangwuwu    | 未填写    | NULL | user@qq.com | 1419811708 | user.jpg |     3 |
+|  9 | 赵溜溜       | zhaoliuliu  | 未填写    | NULL | user@qq.com | 1419811708 | user.jpg |     4 |
+| 10 | 沈琪琪       | shenqiqi    | 未填写    | NULL | user@qq.com | 1419811708 | user.jpg |     5 |
++----+--------------+-------------+-----------+------+-------------+------------+----------+-------+
+10 rows in set (0.00 sec)
+
+mysql> UPDATE cms_user
+    -> 	SET age = CASE id
+    -> 		WHEN 1 THEN 10
+    -> 		WHEN 2 THEN 15
+    -> 		WHEN 3 THEN 20
+    -> 		WHEN 4 THEN 25
+    -> 		WHEN 5 THEN 30
+    -> 		WHEN 6 THEN 10
+    -> 		WHEN 7 THEN 15
+    -> 		WHEN 8 THEN 20
+    -> 		WHEN 9 THEN 25
+    -> 		WHEN 10 THEN 30
+    -> 	END
+    -> WHERE id IN (1,2,3,4,5,6,7,8,9,10);
+Query OK, 5 rows affected (0.07 sec)
+Rows matched: 10  Changed: 5  Warnings: 0
+
+mysql> INSERT cms_user(username,password,regTime,proId) 
+    -> VALUES('张三三','zhangsansan',1419811708,1),
+    -> ^C
+mysql> INSERT cms_user(username,password,regTime,proId) 
+    -> VALUES('张三三','zhangsansan',1419811708,1),
+    -> ^C
+mysql> INSERT cms_user(username,password,regTime,proId) 
+    -> VALUES('吴琦','wuqi',1419811708,1);
+Query OK, 1 row affected (0.02 sec)
+
+mysql> SELECT * FROM cms_user;
++----+--------------+-------------+-----------+------+-------------+------------+----------+-------+
+| id | username     | password    | sex       | age  | email       | regTime    | face     | proId |
++----+--------------+-------------+-----------+------+-------------+------------+----------+-------+
+|  1 | 张三         | zhangsan    | 男        |   10 | user@qq.com | 1419811708 | user.jpg |     1 |
+|  2 | 李四         | lisi        | 男        |   15 | user@qq.com | 1419811708 | user.jpg |     2 |
+|  3 | 王五         | wangwu      | 未填写    |   20 | user@qq.com | 1419811708 | user.jpg |     3 |
+|  4 | 赵六         | zhaoliu     | 未填写    |   25 | user@qq.com | 1419811708 | user.jpg |     4 |
+|  5 | 沈七         | shenqi      | 未填写    |   30 | user@qq.com | 1419811708 | user.jpg |     5 |
+|  6 | 张三三       | zhangsansan | 未填写    |   10 | user@qq.com | 1419811708 | user.jpg |     1 |
+|  7 | 李四思思     | lisisi      | 未填写    |   15 | user@qq.com | 1419811708 | user.jpg |     2 |
+|  8 | 王呜呜       | wangwuwu    | 未填写    |   20 | user@qq.com | 1419811708 | user.jpg |     3 |
+|  9 | 赵溜溜       | zhaoliuliu  | 未填写    |   25 | user@qq.com | 1419811708 | user.jpg |     4 |
+| 10 | 沈琪琪       | shenqiqi    | 未填写    |   30 | user@qq.com | 1419811708 | user.jpg |     5 |
+| 11 | 吴琦         | wuqi        | 未填写    | NULL | user@qq.com | 1419811708 | user.jpg |     1 |
++----+--------------+-------------+-----------+------+-------------+------------+----------+-------+
+11 rows in set (0.00 sec)
+
+mysql> SELECT count(age) FROM cms_user;
++------------+
+| count(age) |
++------------+
+|         10 |
++------------+
+1 row in set (0.03 sec)
+
+mysql> SELECT count(*) FROM cms_user;
++----------+
+| count(*) |
++----------+
+|       11 |
++----------+
+1 row in set (0.33 sec)
+
+mysql> SELECT sex,username,COUNT(username),MAX(age),SUM(age) FROM cms_user;
+ERROR 1140 (42000): In aggregated query without GROUP BY, expression #1 of SELECT list contains nonaggregated column 'cms.cms_user.sex'; this is incompatible with sql_mode=only_full_group_by
+mysql> SELECT sex,GROUP_CONCAT(username),COUNT(username),MAX(age),SUM(age) FROM cms_user GROUP BY sex;
++-----------+----------------------------------------------------------------------------------+-----------------+----------+----------+
+| sex       | GROUP_CONCAT(username)                                                           | COUNT(username) | MAX(age) | SUM(age) |
++-----------+----------------------------------------------------------------------------------+-----------------+----------+----------+
+| 男        | 张三,李四                                                                        |               2 |       15 |       25 |
+| 未填写    | 王五,赵六,沈七,张三三,李四思思,王呜呜,赵溜溜,沈琪琪,吴琦                         |               9 |       30 |      175 |
++-----------+----------------------------------------------------------------------------------+-----------------+----------+----------+
+2 rows in set (0.00 sec)
+
+mysql> SELECT sex,GROUP_CONCAT(username),COUNT(username),MAX(age),SUM(age) FROM cms_user GROUP BY sex\G;
+*************************** 1. row ***************************
+                   sex: 男
+GROUP_CONCAT(username): 张三,李四
+       COUNT(username): 2
+              MAX(age): 15
+              SUM(age): 25
+*************************** 2. row ***************************
+                   sex: 未填写
+GROUP_CONCAT(username): 王五,赵六,沈七,张三三,李四思思,王呜呜,赵溜溜,沈琪琪,吴琦
+       COUNT(username): 9
+              MAX(age): 30
+              SUM(age): 175
+2 rows in set (0.00 sec)
+
+ERROR: 
+No query specified
+
+mysql> SELECT sex,GROUP_CONCAT(username),COUNT(username),MAX(age),SUM(age) FROM cms_user GROUP BY sex HAVING COUNT(*)>2;
++-----------+----------------------------------------------------------------------------------+-----------------+----------+----------+
+| sex       | GROUP_CONCAT(username)                                                           | COUNT(username) | MAX(age) | SUM(age) |
++-----------+----------------------------------------------------------------------------------+-----------------+----------+----------+
+| 未填写    | 王五,赵六,沈七,张三三,李四思思,王呜呜,赵溜溜,沈琪琪,吴琦                         |               9 |       30 |      175 |
++-----------+----------------------------------------------------------------------------------+-----------------+----------+----------+
+1 row in set (0.00 sec)
+
+mysql> SELECT * FROM cms_user WHERE id > 5 ORDER BY age DESC;
++----+--------------+-------------+-----------+------+-------------+------------+----------+-------+
+| id | username     | password    | sex       | age  | email       | regTime    | face     | proId |
++----+--------------+-------------+-----------+------+-------------+------------+----------+-------+
+| 10 | 沈琪琪       | shenqiqi    | 未填写    |   30 | user@qq.com | 1419811708 | user.jpg |     5 |
+|  9 | 赵溜溜       | zhaoliuliu  | 未填写    |   25 | user@qq.com | 1419811708 | user.jpg |     4 |
+|  8 | 王呜呜       | wangwuwu    | 未填写    |   20 | user@qq.com | 1419811708 | user.jpg |     3 |
+|  7 | 李四思思     | lisisi      | 未填写    |   15 | user@qq.com | 1419811708 | user.jpg |     2 |
+|  6 | 张三三       | zhangsansan | 未填写    |   10 | user@qq.com | 1419811708 | user.jpg |     1 |
+| 11 | 吴琦         | wuqi        | 未填写    | NULL | user@qq.com | 1419811708 | user.jpg |     1 |
++----+--------------+-------------+-----------+------+-------------+------------+----------+-------+
+6 rows in set (0.00 sec)
+
+mysql> SELECT id,GROUP_CONCAT(username) FROM cms_user GROUP BY sex;
+ERROR 1055 (42000): Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'cms.cms_user.id' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+mysql> SELECT GROUP_CONCAT(username) FROM cms_user GROUP BY sex;
++----------------------------------------------------------------------------------+
+| GROUP_CONCAT(username)                                                           |
++----------------------------------------------------------------------------------+
+| 张三,李四                                                                        |
+| 王五,赵六,沈七,张三三,李四思思,王呜呜,赵溜溜,沈琪琪,吴琦                         |
++----------------------------------------------------------------------------------+
+2 rows in set (0.00 sec)
+
+mysql> SELECT age FROM cms_user WHERE ORDER BY RAND();
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'ORDER BY RAND()' at line 1
+mysql> SELECT age FROM cms_user ORDER BY RAND();
++------+
+| age  |
++------+
+|   30 |
+|   15 |
+|   30 |
+|   10 |
+|   15 |
+|   25 |
+|   25 |
+|   10 |
+| NULL |
+|   20 |
+|   20 |
++------+
+11 rows in set (0.05 sec)
+
+mysql> SELECT age FROM cms_user ORDER BY RAND();
++------+
+| age  |
++------+
+|   25 |
+|   30 |
+|   20 |
+|   15 |
+|   10 |
+|   30 |
+|   20 |
+|   25 |
+|   15 |
+|   10 |
+| NULL |
++------+
+11 rows in set (0.00 sec)
+
+mysql> SELECT * FROM cms_user LIMIT 3;
++----+----------+----------+-----------+------+-------------+------------+----------+-------+
+| id | username | password | sex       | age  | email       | regTime    | face     | proId |
++----+----------+----------+-----------+------+-------------+------------+----------+-------+
+|  1 | 张三     | zhangsan | 男        |   10 | user@qq.com | 1419811708 | user.jpg |     1 |
+|  2 | 李四     | lisi     | 男        |   15 | user@qq.com | 1419811708 | user.jpg |     2 |
+|  3 | 王五     | wangwu   | 未填写    |   20 | user@qq.com | 1419811708 | user.jpg |     3 |
++----+----------+----------+-----------+------+-------------+------------+----------+-------+
+3 rows in set (0.04 sec)
+
+mysql> SELECT * FROM cms_user ORDER BY id DESC LIMIT 3;
++----+-----------+------------+-----------+------+-------------+------------+----------+-------+
+| id | username  | password   | sex       | age  | email       | regTime    | face     | proId |
++----+-----------+------------+-----------+------+-------------+------------+----------+-------+
+| 11 | 吴琦      | wuqi       | 未填写    | NULL | user@qq.com | 1419811708 | user.jpg |     1 |
+| 10 | 沈琪琪    | shenqiqi   | 未填写    |   30 | user@qq.com | 1419811708 | user.jpg |     5 |
+|  9 | 赵溜溜    | zhaoliuliu | 未填写    |   25 | user@qq.com | 1419811708 | user.jpg |     4 |
++----+-----------+------------+-----------+------+-------------+------------+----------+-------+
+3 rows in set (0.03 sec)
+
+mysql> SELECT * FROM cms_user LIMIT 3，5;
+ERROR 1327 (42000): Undeclared variable: 3，5
+mysql> SELECT * FROM cms_user LIMIT 3,5;
++----+--------------+-------------+-----------+------+-------------+------------+----------+-------+
+| id | username     | password    | sex       | age  | email       | regTime    | face     | proId |
++----+--------------+-------------+-----------+------+-------------+------------+----------+-------+
+|  4 | 赵六         | zhaoliu     | 未填写    |   25 | user@qq.com | 1419811708 | user.jpg |     4 |
+|  5 | 沈七         | shenqi      | 未填写    |   30 | user@qq.com | 1419811708 | user.jpg |     5 |
+|  6 | 张三三       | zhangsansan | 未填写    |   10 | user@qq.com | 1419811708 | user.jpg |     1 |
+|  7 | 李四思思     | lisisi      | 未填写    |   15 | user@qq.com | 1419811708 | user.jpg |     2 |
+|  8 | 王呜呜       | wangwuwu    | 未填写    |   20 | user@qq.com | 1419811708 | user.jpg |     3 |
++----+--------------+-------------+-----------+------+-------------+------------+----------+-------+
+5 rows in set (0.00 sec)
+
+mysql> UPDATE cms_user SET email = '123@qq.com' WHERE id < 3 LIMIT 5;
+Query OK, 2 rows affected (0.08 sec)
+Rows matched: 2  Changed: 2  Warnings: 0
+
+mysql> select * from cms_user;
++----+--------------+-------------+-----------+------+-------------+------------+----------+-------+
+| id | username     | password    | sex       | age  | email       | regTime    | face     | proId |
++----+--------------+-------------+-----------+------+-------------+------------+----------+-------+
+|  1 | 张三         | zhangsan    | 男        |   10 | 123@qq.com  | 1419811708 | user.jpg |     1 |
+|  2 | 李四         | lisi        | 男        |   15 | 123@qq.com  | 1419811708 | user.jpg |     2 |
+|  3 | 王五         | wangwu      | 未填写    |   20 | user@qq.com | 1419811708 | user.jpg |     3 |
+|  4 | 赵六         | zhaoliu     | 未填写    |   25 | user@qq.com | 1419811708 | user.jpg |     4 |
+|  5 | 沈七         | shenqi      | 未填写    |   30 | user@qq.com | 1419811708 | user.jpg |     5 |
+|  6 | 张三三       | zhangsansan | 未填写    |   10 | user@qq.com | 1419811708 | user.jpg |     1 |
+|  7 | 李四思思     | lisisi      | 未填写    |   15 | user@qq.com | 1419811708 | user.jpg |     2 |
+|  8 | 王呜呜       | wangwuwu    | 未填写    |   20 | user@qq.com | 1419811708 | user.jpg |     3 |
+|  9 | 赵溜溜       | zhaoliuliu  | 未填写    |   25 | user@qq.com | 1419811708 | user.jpg |     4 |
+| 10 | 沈琪琪       | shenqiqi    | 未填写    |   30 | user@qq.com | 1419811708 | user.jpg |     5 |
+| 11 | 吴琦         | wuqi        | 未填写    | NULL | user@qq.com | 1419811708 | user.jpg |     1 |
++----+--------------+-------------+-----------+------+-------------+------------+----------+-------+
+11 rows in set (0.00 sec)
+
+mysql> UPDATE cms_user SET email = '123@qq.com' LIMIT 5;
+Query OK, 3 rows affected (0.12 sec)
+Rows matched: 5  Changed: 3  Warnings: 0
+
+mysql> select * from cms_user;
++----+--------------+-------------+-----------+------+-------------+------------+----------+-------+
+| id | username     | password    | sex       | age  | email       | regTime    | face     | proId |
++----+--------------+-------------+-----------+------+-------------+------------+----------+-------+
+|  1 | 张三         | zhangsan    | 男        |   10 | 123@qq.com  | 1419811708 | user.jpg |     1 |
+|  2 | 李四         | lisi        | 男        |   15 | 123@qq.com  | 1419811708 | user.jpg |     2 |
+|  3 | 王五         | wangwu      | 未填写    |   20 | 123@qq.com  | 1419811708 | user.jpg |     3 |
+|  4 | 赵六         | zhaoliu     | 未填写    |   25 | 123@qq.com  | 1419811708 | user.jpg |     4 |
+|  5 | 沈七         | shenqi      | 未填写    |   30 | 123@qq.com  | 1419811708 | user.jpg |     5 |
+|  6 | 张三三       | zhangsansan | 未填写    |   10 | user@qq.com | 1419811708 | user.jpg |     1 |
+|  7 | 李四思思     | lisisi      | 未填写    |   15 | user@qq.com | 1419811708 | user.jpg |     2 |
+|  8 | 王呜呜       | wangwuwu    | 未填写    |   20 | user@qq.com | 1419811708 | user.jpg |     3 |
+|  9 | 赵溜溜       | zhaoliuliu  | 未填写    |   25 | user@qq.com | 1419811708 | user.jpg |     4 |
+| 10 | 沈琪琪       | shenqiqi    | 未填写    |   30 | user@qq.com | 1419811708 | user.jpg |     5 |
+| 11 | 吴琦         | wuqi        | 未填写    | NULL | user@qq.com | 1419811708 | user.jpg |     1 |
++----+--------------+-------------+-----------+------+-------------+------------+----------+-------+
+11 rows in set (0.00 sec)
+
+mysql> DELETE FROM cms_user WHERE sex = '未填写' ORDER BY id DESC LIMIT 1；
+    -> ;
+ERROR 1327 (42000): Undeclared variable: 1；
+mysql> DELETE FROM cms_user WHERE sex = '未填写' ORDER BY id DESC LIMIT 1;
+Query OK, 1 row affected (0.08 sec)
+
+mysql> select * from cms_user;
++----+--------------+-------------+-----------+------+-------------+------------+----------+-------+
+| id | username     | password    | sex       | age  | email       | regTime    | face     | proId |
++----+--------------+-------------+-----------+------+-------------+------------+----------+-------+
+|  1 | 张三         | zhangsan    | 男        |   10 | 123@qq.com  | 1419811708 | user.jpg |     1 |
+|  2 | 李四         | lisi        | 男        |   15 | 123@qq.com  | 1419811708 | user.jpg |     2 |
+|  3 | 王五         | wangwu      | 未填写    |   20 | 123@qq.com  | 1419811708 | user.jpg |     3 |
+|  4 | 赵六         | zhaoliu     | 未填写    |   25 | 123@qq.com  | 1419811708 | user.jpg |     4 |
+|  5 | 沈七         | shenqi      | 未填写    |   30 | 123@qq.com  | 1419811708 | user.jpg |     5 |
+|  6 | 张三三       | zhangsansan | 未填写    |   10 | user@qq.com | 1419811708 | user.jpg |     1 |
+|  7 | 李四思思     | lisisi      | 未填写    |   15 | user@qq.com | 1419811708 | user.jpg |     2 |
+|  8 | 王呜呜       | wangwuwu    | 未填写    |   20 | user@qq.com | 1419811708 | user.jpg |     3 |
+|  9 | 赵溜溜       | zhaoliuliu  | 未填写    |   25 | user@qq.com | 1419811708 | user.jpg |     4 |
+| 10 | 沈琪琪       | shenqiqi    | 未填写    |   30 | user@qq.com | 1419811708 | user.jpg |     5 |
++----+--------------+-------------+-----------+------+-------------+------------+----------+-------+
+10 rows in set (0.00 sec)
+
+mysql> SELECT u.id,u.username,p.proName FROM cms_user AS u,provinces AS p;
++----+--------------+---------+
+| id | username     | proName |
++----+--------------+---------+
+|  1 | 张三         | 上海    |
+|  1 | 张三         | 北京    |
+|  1 | 张三         | 广州    |
+|  1 | 张三         | 杭州    |
+|  1 | 张三         | 深圳    |
+|  6 | 张三三       | 上海    |
+|  6 | 张三三       | 北京    |
+|  6 | 张三三       | 广州    |
+|  6 | 张三三       | 杭州    |
+|  6 | 张三三       | 深圳    |
+|  2 | 李四         | 上海    |
+|  2 | 李四         | 北京    |
+|  2 | 李四         | 广州    |
+|  2 | 李四         | 杭州    |
+|  2 | 李四         | 深圳    |
+|  7 | 李四思思     | 上海    |
+|  7 | 李四思思     | 北京    |
+|  7 | 李四思思     | 广州    |
+|  7 | 李四思思     | 杭州    |
+|  7 | 李四思思     | 深圳    |
+|  5 | 沈七         | 上海    |
+|  5 | 沈七         | 北京    |
+|  5 | 沈七         | 广州    |
+|  5 | 沈七         | 杭州    |
+|  5 | 沈七         | 深圳    |
+| 10 | 沈琪琪       | 上海    |
+| 10 | 沈琪琪       | 北京    |
+| 10 | 沈琪琪       | 广州    |
+| 10 | 沈琪琪       | 杭州    |
+| 10 | 沈琪琪       | 深圳    |
+|  3 | 王五         | 上海    |
+|  3 | 王五         | 北京    |
+|  3 | 王五         | 广州    |
+|  3 | 王五         | 杭州    |
+|  3 | 王五         | 深圳    |
+|  8 | 王呜呜       | 上海    |
+|  8 | 王呜呜       | 北京    |
+|  8 | 王呜呜       | 广州    |
+|  8 | 王呜呜       | 杭州    |
+|  8 | 王呜呜       | 深圳    |
+|  4 | 赵六         | 上海    |
+|  4 | 赵六         | 北京    |
+|  4 | 赵六         | 广州    |
+|  4 | 赵六         | 杭州    |
+|  4 | 赵六         | 深圳    |
+|  9 | 赵溜溜       | 上海    |
+|  9 | 赵溜溜       | 北京    |
+|  9 | 赵溜溜       | 广州    |
+|  9 | 赵溜溜       | 杭州    |
+|  9 | 赵溜溜       | 深圳    |
++----+--------------+---------+
+50 rows in set (0.08 sec)
+
+mysql> SELECT u.id,u.username,p.proName FROM cms_user AS u,provinces AS p 
+    -> WHERE u.proId = p.id;
++----+--------------+---------+
+| id | username     | proName |
++----+--------------+---------+
+|  1 | 张三         | 北京    |
+|  2 | 李四         | 上海    |
+|  3 | 王五         | 广州    |
+|  4 | 赵六         | 深圳    |
+|  5 | 沈七         | 杭州    |
+|  6 | 张三三       | 北京    |
+|  7 | 李四思思     | 上海    |
+|  8 | 王呜呜       | 广州    |
+|  9 | 赵溜溜       | 深圳    |
+| 10 | 沈琪琪       | 杭州    |
++----+--------------+---------+
+10 rows in set (0.00 sec)
+
+mysql> SELECT u.id,u.username,p.proName FROM cms_user AS u JOIN provinces AS p ON u.proId = p.id;
++----+--------------+---------+
+| id | username     | proName |
++----+--------------+---------+
+|  1 | 张三         | 北京    |
+|  2 | 李四         | 上海    |
+|  3 | 王五         | 广州    |
+|  4 | 赵六         | 深圳    |
+|  5 | 沈七         | 杭州    |
+|  6 | 张三三       | 北京    |
+|  7 | 李四思思     | 上海    |
+|  8 | 王呜呜       | 广州    |
+|  9 | 赵溜溜       | 深圳    |
+| 10 | 沈琪琪       | 杭州    |
++----+--------------+---------+
+10 rows in set (0.00 sec)
+
+mysql> SELECT u.id,u.username,u.sex,p.proName FROM cms_user AS u JOIN provinces AS p ON u.proId = p.id;
++----+--------------+-----------+---------+
+| id | username     | sex       | proName |
++----+--------------+-----------+---------+
+|  1 | 张三         | 男        | 北京    |
+|  2 | 李四         | 男        | 上海    |
+|  3 | 王五         | 未填写    | 广州    |
+|  4 | 赵六         | 未填写    | 深圳    |
+|  5 | 沈七         | 未填写    | 杭州    |
+|  6 | 张三三       | 未填写    | 北京    |
+|  7 | 李四思思     | 未填写    | 上海    |
+|  8 | 王呜呜       | 未填写    | 广州    |
+|  9 | 赵溜溜       | 未填写    | 深圳    |
+| 10 | 沈琪琪       | 未填写    | 杭州    |
++----+--------------+-----------+---------+
+10 rows in set (0.00 sec)
+
+mysql> SELECT u.id,u.username,u.sex,p.proName FROM cms_user AS u JOIN provinces AS p ON u.proId = p.id WHERE sex = '未填写';
++----+--------------+-----------+---------+
+| id | username     | sex       | proName |
++----+--------------+-----------+---------+
+|  3 | 王五         | 未填写    | 广州    |
+|  4 | 赵六         | 未填写    | 深圳    |
+|  5 | 沈七         | 未填写    | 杭州    |
+|  6 | 张三三       | 未填写    | 北京    |
+|  7 | 李四思思     | 未填写    | 上海    |
+|  8 | 王呜呜       | 未填写    | 广州    |
+|  9 | 赵溜溜       | 未填写    | 深圳    |
+| 10 | 沈琪琪       | 未填写    | 杭州    |
++----+--------------+-----------+---------+
+8 rows in set (0.03 sec)
+
+mysql> SELECT u.id,u.username,u.sex,p.proName FROM cms_user AS u JOIN provinces AS p ON u.proId = p.id WHERE u.sex = '未填写' GROUP BY p.proName;
+ERROR 1055 (42000): Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'cms.u.id' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+mysql> SELECT u.username,u.sex,p.proName FROM cms_user AS u JOIN provinces AS p ON u.proId = p.id WHERE u.sex = '未填写' GROUP BY p.proName;
+ERROR 1055 (42000): Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'cms.u.username' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+mysql> SELECT GROUP_CONCAT(u.id),GROUP_CONCAT(u.username),GROUP_CONCAT(u.sex),p.prou.sexName FROM cms_user AS u JOIN provinces AS p ON u.proId = p.id WHERE u.sex = '未填写' GROUP BY p.proName;
+ERROR 1054 (42S22): Unknown column 'p.prou.sexName' in 'field list'
+mysql> SELECT GROUP_CONCAT(u.id),GROUP_CONCAT(u.username),GROUP_CONCAT(u.sex),p.proName FROM cms_user AS u JOIN provinces AS p ON u.proId = p.id WHERE u.sex = '未填写' GROUP BY p.proName;
++--------------------+--------------------------+---------------------+---------+
+| GROUP_CONCAT(u.id) | GROUP_CONCAT(u.username) | GROUP_CONCAT(u.sex) | proName |
++--------------------+--------------------------+---------------------+---------+
+| 7                  | 李四思思                 | 未填写              | 上海    |
+| 6                  | 张三三                   | 未填写              | 北京    |
+| 8,3                | 王呜呜,王五              | 未填写,未填写       | 广州    |
+| 5,10               | 沈七,沈琪琪              | 未填写,未填写       | 杭州    |
+| 9,4                | 赵溜溜,赵六              | 未填写,未填写       | 深圳    |
++--------------------+--------------------------+---------------------+---------+
+5 rows in set (0.00 sec)
+
+mysql> SELECT GROUP_CONCAT(u.id),GROUP_CONCAT(u.username),GROUP_CONCAT(u.sex),p.proName FROM cms_user AS u JOIN provinces AS p ON u.proId = p.id WHERE u.sex = '未填写' GROUP BY p.proName HAVING COUNT(*) > 2;
+Empty set (0.00 sec)
+
+mysql> SELECT GROUP_CONCAT(u.id),GROUP_CONCAT(u.username),GROUP_CONCAT(u.sex),p.proName FROM cms_user AS u JOIN provinces AS p ON u.proId = p.id WHERE u.sex = '未填写' GROUP BY p.proName HAVING COUNT(*) >= 2;
++--------------------+--------------------------+---------------------+---------+
+| GROUP_CONCAT(u.id) | GROUP_CONCAT(u.username) | GROUP_CONCAT(u.sex) | proName |
++--------------------+--------------------------+---------------------+---------+
+| 8,3                | 王呜呜,王五              | 未填写,未填写       | 广州    |
+| 5,10               | 沈七,沈琪琪              | 未填写,未填写       | 杭州    |
+| 9,4                | 赵溜溜,赵六              | 未填写,未填写       | 深圳    |
++--------------------+--------------------------+---------------------+---------+
+3 rows in set (0.00 sec)
+
+mysql> SELECT GROUP_CONCAT(u.id),GROUP_CONCAT(u.username),GROUP_CONCAT(u.sex),p.proName FROM cms_user AS u JOIN provinces AS p ON u.proId = p.id WHERE u.sex = '未填写' GROUP BY p.proName HAVING COUNT(*) >= 2 ORDER BY u.id DESC;
+ERROR 1055 (42000): Expression #1 of ORDER BY clause is not in GROUP BY clause and contains nonaggregated column 'cms.u.id' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+mysql> SELECT GROUP_CONCAT(u.id),GROUP_CONCAT(u.username),GROUP_CONCAT(u.sex),p.proName FROM cms_user AS u JOIN provinces AS p ON u.proId = p.id WHERE u.sex = '未填写' GROUP BY p.proName HAVING COUNT(*) >= 2 ORDER BY GROUP_CONCAT(u.id) DESC;
++--------------------+--------------------------+---------------------+---------+
+| GROUP_CONCAT(u.id) | GROUP_CONCAT(u.username) | GROUP_CONCAT(u.sex) | proName |
++--------------------+--------------------------+---------------------+---------+
+| 9,4                | 赵溜溜,赵六              | 未填写,未填写       | 深圳    |
+| 8,3                | 王呜呜,王五              | 未填写,未填写       | 广州    |
+| 5,10               | 沈七,沈琪琪              | 未填写,未填写       | 杭州    |
++--------------------+--------------------------+---------------------+---------+
+3 rows in set (0.00 sec)
+
+mysql> SELECT GROUP_CONCAT(u.id),GROUP_CONCAT(u.username),GROUP_CONCAT(u.sex),p.proName FROM cms_user AS u JOIN provinces AS p ON u.proId = p.id WHERE u.sex = '未填写' GROUP BY p.proName HAVING COUNT(*) >= 2 ORDER BY id DESC;
+ERROR 1052 (23000): Column 'id' in order clause is ambiguous
+mysql> SELECT GROUP_CONCAT(u.id),GROUP_CONCAT(u.username),GROUP_CONCAT(u.sex),p.proName FROM cms_user AS u JOIN provinces AS p ON u.proId = p.id WHERE u.sex = '未填写' GROUP BY p.proName HAVING COUNT(*) >= 2 ORDER BY GROUP_CONCAT(u.id) DESC LIMIT 0,2;
++--------------------+--------------------------+---------------------+---------+
+| GROUP_CONCAT(u.id) | GROUP_CONCAT(u.username) | GROUP_CONCAT(u.sex) | proName |
++--------------------+--------------------------+---------------------+---------+
+| 9,4                | 赵溜溜,赵六              | 未填写,未填写       | 深圳    |
+| 8,3                | 王呜呜,王五              | 未填写,未填写       | 广州    |
++--------------------+--------------------------+---------------------+---------+
+2 rows in set (0.00 sec)
+
+mysql> select * from cms_news;
++----+---------------+-----------------------------------+----------+------------+-----+-----+
+| id | title         | content                           | clickNum | pubTime    | cId | aId |
++----+---------------+-----------------------------------+----------+------------+-----+-----+
+|  1 | 国内新闻1     | 国内新闻具体内容如下...           |        0 | 1419818508 |   1 |   1 |
+|  2 | 国际新闻1     | 国际新闻具体内容如下...           |        0 | 1419818508 |   1 |   2 |
+|  3 | 游戏新闻1     | 游戏新闻具体内容如下...           |        0 | 1419818508 |   1 |   3 |
+|  4 | 军事新闻1     | 军事新闻具体内容如下...           |        0 | 1419818508 |   2 |   4 |
+|  5 | 娱乐新闻1     | 娱乐新闻具体内容如下...           |        0 | 1419818508 |   2 |   5 |
++----+---------------+-----------------------------------+----------+------------+-----+-----+
+5 rows in set (0.12 sec)
+
+mysql> show tables;
++---------------+
+| Tables_in_cms |
++---------------+
+| cms_admin     |
+| cms_cate      |
+| cms_news      |
+| cms_user      |
+| provinces     |
++---------------+
+5 rows in set (0.00 sec)
+
+mysql> select * from cms_news;
++----+---------------+-----------------------------------+----------+------------+-----+-----+
+| id | title         | content                           | clickNum | pubTime    | cId | aId |
++----+---------------+-----------------------------------+----------+------------+-----+-----+
+|  1 | 国内新闻1     | 国内新闻具体内容如下...           |        0 | 1419818508 |   1 |   1 |
+|  2 | 国际新闻1     | 国际新闻具体内容如下...           |        0 | 1419818508 |   1 |   2 |
+|  3 | 游戏新闻1     | 游戏新闻具体内容如下...           |        0 | 1419818508 |   1 |   3 |
+|  4 | 军事新闻1     | 军事新闻具体内容如下...           |        0 | 1419818508 |   2 |   4 |
+|  5 | 娱乐新闻1     | 娱乐新闻具体内容如下...           |        0 | 1419818508 |   2 |   5 |
++----+---------------+-----------------------------------+----------+------------+-----+-----+
+5 rows in set (0.00 sec)
+
+mysql> select * from cms_cate;
++----+--------------+--------------------+
+| id | cateName     | cateDesc           |
++----+--------------+--------------------+
+|  1 | 国内新闻     | 聚焦国内新闻       |
+|  2 | 国际新闻     | 聚焦国际新闻       |
+|  3 | 游戏新闻     | 聚焦游戏新闻       |
+|  4 | 军事新闻     | 聚焦军事新闻       |
+|  5 | 娱乐新闻     | 聚焦娱乐新闻       |
++----+--------------+--------------------+
+5 rows in set (0.10 sec)
+
+mysql> select * from cms_admin;
++----+----------+----------+--------------+-----------------+
+| id | username | password | email        | role            |
++----+----------+----------+--------------+-----------------+
+|  1 | admin    | admin    | admin@qq.com | 超级管理员      |
+|  2 | sgw      | sgw      | admin@qq.com | 普通管理员      |
+|  3 | wsy      | wsy      | admin@qq.com | 普通管理员      |
+|  4 | zgl      | zgl      | admin@qq.com | 普通管理员      |
+|  5 | test     | test     | admin@qq.com | 普通管理员      |
++----+----------+----------+--------------+-----------------+
+5 rows in set (0.04 sec)
+
+mysql> SELECT n.title,c.cateName,a.username FROM cms_news AS n 
+    -> JOIN cms_cate AS c ON n.cId = c.id 
+    -> JOIN cms_admin AS a ON n.aId = a.id;
++---------------+--------------+----------+
+| title         | cateName     | username |
++---------------+--------------+----------+
+| 国内新闻1     | 国内新闻     | admin    |
+| 国际新闻1     | 国内新闻     | sgw      |
+| 游戏新闻1     | 国内新闻     | wsy      |
+| 军事新闻1     | 国际新闻     | zgl      |
+| 娱乐新闻1     | 国际新闻     | test     |
++---------------+--------------+----------+
+5 rows in set (0.00 sec)
+
+mysql> show cms_user;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'cms_user' at line 1
+mysql> show table cms_user;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'cms_user' at line 1
+mysql> show create table cms_user;
++----------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table    | Create Table                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
++----------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| cms_user | CREATE TABLE `cms_user` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `username` varchar(20) NOT NULL,
+  `password` char(32) NOT NULL,
+  `sex` enum('男','女','未填写') NOT NULL DEFAULT '未填写',
+  `age` tinyint(3) unsigned DEFAULT NULL,
+  `email` varchar(50) NOT NULL DEFAULT 'user@qq.com',
+  `regTime` int(10) unsigned NOT NULL,
+  `face` varchar(100) NOT NULL DEFAULT 'user.jpg',
+  `proId` tinyint(3) unsigned NOT NULL COMMENT '用户所在省份',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `username` (`username`)
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8               |
++----------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+1 row in set (0.00 sec)
+
+mysql> show create table province;
+ERROR 1146 (42S02): Table 'cms.province' doesn't exist
+mysql> show create table provinces;
++-----------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table     | Create Table                                                                                                                                                                                                                    |
++-----------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| provinces | CREATE TABLE `provinces` (
+  `id` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
+  `proName` varchar(20) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `proName` (`proName`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 |
++-----------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+1 row in set (0.00 sec)
+
+mysql> INSERT provinces(proName) VALUES ('山西');
+Query OK, 1 row affected (0.06 sec)
+
+mysql> select * from provinces;
++----+---------+
+| id | proName |
++----+---------+
+|  2 | 上海    |
+|  1 | 北京    |
+|  6 | 山西    |
+|  3 | 广州    |
+|  5 | 杭州    |
+|  4 | 深圳    |
++----+---------+
+6 rows in set (0.00 sec)
+
+mysql> SELECT u.id,u.username,p.proName FROM cms_user AS u,provinces AS p WHERE u.proId = p.id;
++----+--------------+---------+
+| id | username     | proName |
++----+--------------+---------+
+|  1 | 张三         | 北京    |
+|  2 | 李四         | 上海    |
+|  3 | 王五         | 广州    |
+|  4 | 赵六         | 深圳    |
+|  5 | 沈七         | 杭州    |
+|  6 | 张三三       | 北京    |
+|  7 | 李四思思     | 上海    |
+|  8 | 王呜呜       | 广州    |
+|  9 | 赵溜溜       | 深圳    |
+| 10 | 沈琪琪       | 杭州    |
++----+--------------+---------+
+10 rows in set (0.00 sec)
+
+mysql> SELECT u.id,u.username,p.proName FROM cms_user AS u LEFT JOIN provinces AS p ON u.proId = p.id;
++----+--------------+---------+
+| id | username     | proName |
++----+--------------+---------+
+|  1 | 张三         | 北京    |
+|  2 | 李四         | 上海    |
+|  3 | 王五         | 广州    |
+|  4 | 赵六         | 深圳    |
+|  5 | 沈七         | 杭州    |
+|  6 | 张三三       | 北京    |
+|  7 | 李四思思     | 上海    |
+|  8 | 王呜呜       | 广州    |
+|  9 | 赵溜溜       | 深圳    |
+| 10 | 沈琪琪       | 杭州    |
++----+--------------+---------+
+10 rows in set (0.00 sec)
+
+mysql> SELECT u.id,u.username,p.proName FROM cms_user AS u RIGHT JOIN provinces AS p ON u.proId = p.id;
++------+--------------+---------+
+| id   | username     | proName |
++------+--------------+---------+
+|    1 | 张三         | 北京    |
+|    2 | 李四         | 上海    |
+|    3 | 王五         | 广州    |
+|    4 | 赵六         | 深圳    |
+|    5 | 沈七         | 杭州    |
+|    6 | 张三三       | 北京    |
+|    7 | 李四思思     | 上海    |
+|    8 | 王呜呜       | 广州    |
+|    9 | 赵溜溜       | 深圳    |
+|   10 | 沈琪琪       | 杭州    |
+| NULL | NULL         | 山西    |
++------+--------------+---------+
+11 rows in set (0.00 sec)
+
+mysql> \t;
