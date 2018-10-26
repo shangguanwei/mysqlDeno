@@ -310,3 +310,116 @@ JOIN cms_admin AS a ON n.aId = a.id;
 INSERT provinces(proName) VALUES ('山西');
 SELECT u.id,u.username,p.proName FROM cms_user AS u RIGHT JOIN provinces AS p ON u.proId = p.id;
 
+
+
+--外键
+--1.建表时添加
+--创建主表部门表
+--注意 引擎和编码之间没有逗号
+CREATE TABLE IF NOT EXISTS department(
+id TINYINT UNSIGNED AUTO_INCREMENT KEY,
+depDesc VARCHAR(200)
+)ENGINE=INNODB CHARSET=UTF8;
+
+ALTER TABLE department CHANGE depDesc depName VARCHAR(20);
+INSERT department(depName) VALUES('研发部'),('测试部'),('市场部'),('销售部');
+
+--创建带外键的副表员工表
+CREATE TABLE IF NOT EXISTS employee(
+id SMALLINT UNSIGNED AUTO_INCREMENT KEY,
+empName VARCHAR(50) NOT NULL,
+depId TINYINT UNSIGNED,
+FOREIGN KEY(depId) REFERENCES department(id)
+)ENGINE=INNODB;
+
+INSERT employee(empName,depId) VALUES ('wsy',1),('sgw',2),('xiaoming',3),('zxs',3),('dlz',4);
+
+--存在外键约束，不允许直接删除主表记录
+DELETE FROM department WHERE id=3;
+
+DELETE FROM employee WHERE depId=3;
+DELETE FROM department WHERE id=3;
+
+--2建表后添加或删除外键
+ALTER TABLE employee DROP FOREIGN KEY `employee_ibfk_1`;
+ALTER TABLE employee ADD CONSTRAINT emp_fk_dep FOREIGN KEY(depId) REFERENCES department(id);
+
+--ON DELETE CASCADE 和 ON UPDATE CASCADE 父表数据更新时自动更新子表
+ALTER TABLE employee DROP FOREIGN KEY emp_fk_dep;
+
+ALTER TABLE employee ADD 
+CONSTRAINT emp_fk_dep FOREIGN KEY(depId) REFERENCES department(id) 
+ON DELETE CASCADE ON UPDATE CASCADE;
+
+
+SELECT * FROM employee;
+DELETE FROM department WHERE id = 4;
+
+--更新表中数据用update,修改表结构用modify,修改表名rename，修改字段名change
+UPDATE department SET id = id + 10;
+
+--ON DELETE SET NULL 和 ON UPDATE SET NULL 父表数据更新时自动子表数据置空
+--前提条件，字表对应字段未设置 NOT NULL
+ALTER TABLE employee DROP FOREIGN KEY emp_fk_dep;
+
+ALTER TABLE employee ADD 
+CONSTRAINT emp_fk_dep FOREIGN KEY(depId) REFERENCES department(id) 
+ON DELETE SET NULL ON UPDATE SET NULL;
+
+UPDATE department SET id = id - 10;
+SELECT * FROM employee;
+
+--联合查询
+SELECT empName FROM employee UNION SELECT username FROM cms_user UNION SELECT depName FROM department;
+SELECT empName FROM employee UNION ALL SELECT username FROM cms_user;
+
+--子查询
+CREATE TABLE IF NOT EXISTS student(
+id TINYINT UNIQUE AUTO_INCREMENT KEY,
+stuName VARCHAR(50) NOT NULL,
+stuScore TINYINT
+);
+INSERT student(stuName,stuScore) VALUES('stu1',30),('stu2',40),('stu3',50),('stu4',60),('stu5',70),('stu6',80),('stu7',90),('stu8',100);
+
+CREATE TABLE IF NOT EXISTS scholarship(
+id TINYINT UNIQUE AUTO_INCREMENT KEY,
+level TINYINT
+);
+INSERT scholarship(level) VALUES(70),(80),(90);
+
+--[NOT]IN
+SELECT stuName,stuScore FROM student WHERE stuScore IN (SELECT level FROM scholarship);
+--比较运算符
+SELECT stuName,stuScore FROM student WHERE stuScore >= (SELECT level FROM scholarship WHERE id =1);
+--[NOT]EXISTS 子表达式查询结果成立才执行
+SELECT stuName,stuScore FROM student WHERE EXISTS (SELECT level FROM scholarship WHERE id =1);
+--ANY|SOME、ALL
+SELECT stuName,stuScore FROM student WHERE stuScore > ANY (SELECT level FROM scholarship);
+SELECT stuName,stuScore FROM student WHERE stuScore != ALL (SELECT level FROM scholarship);
+--建表时插入数据,字段名称不一致会新建字段
+CREATE TABLE IF NOT EXISTS test1(
+id TINYINT UNSIGNED AUTO_INCREMENT KEY,
+score TINYINT
+)SELECT stuScore FROM student;
+--数据插入 注意没有from
+INSERT test1(score) SELECT stuScore FROM student;
+
+
+
+--正则表达式
+SELECT * FROM cms_user WHERE username REGEXP '^张';
+SELECT * FROM cms_user WHERE username REGEXP '思$';
+--字符集合可指定范围，如[a-f],要注意[^李张沈]的查询结果
+SELECT * FROM cms_user WHERE username REGEXP '[^李张沈]';
+
+
+
+
+
+
+
+
+
+
+
+

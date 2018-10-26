@@ -1,0 +1,763 @@
+mysql> select database();
++------------+
+| database() |
++------------+
+| cms        |
++------------+
+1 row in set (0.04 sec)
+
+mysql> CREATE TABLE IF NOT EXISTS department(
+    -> id TINYINT UNSIGNED AUTO_INCREMENT KEY,
+    -> depDesc VARCHAR(200)
+    -> )ENGINE=INNODB CHARSET=UTF8;
+Query OK, 0 rows affected, 1 warning (0.38 sec)
+
+mysql> show warnings;
++---------+------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Level   | Code | Message                                                                                                                                                                     |
++---------+------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Warning | 3719 | 'utf8' is currently an alias for the character set UTF8MB3, but will be an alias for UTF8MB4 in a future release. Please consider using UTF8MB4 in order to be unambiguous. |
++---------+------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+1 row in set (0.03 sec)
+
+mysql> ALTER TABLE department MODIFY depName VARCHAR(20);
+ERROR 1054 (42S22): Unknown column 'depName' in 'department'
+mysql> ALTER TABLE department CHANGE depDesc depName VARCHAR(20);
+Query OK, 0 rows affected (0.27 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> SELECT * FROM department;
+Empty set (0.09 sec)
+
+mysql> INSERT department(depName) VALUES('研发部'),('测试部'),('市场部'),('销售部');
+Query OK, 4 rows affected (0.18 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+mysql> SELECT * FROM department;
++----+-----------+
+| id | depName   |
++----+-----------+
+|  1 | 研发部    |
+|  2 | 测试部    |
+|  3 | 市场部    |
+|  4 | 销售部    |
++----+-----------+
+4 rows in set (0.00 sec)
+
+mysql> CREATE TABLE IF NOT EXISTS employee(
+    -> id SMALLINT UNSIGNED AUTO_INCREMENT KEY,
+    -> empName VARCHAR(50) NOT NULL,
+    -> depId TINYINT UNSIGNED,
+    -> FOREING KEY(depId) REFERENCES department(id)
+    -> )ENGINE=INNODB;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'KEY(depId) REFERENCES department(id)
+)ENGINE=INNODB' at line 5
+mysql> CREATE TABLE IF NOT EXISTS employee(
+    -> id SMALLINT UNSIGNED AUTO_INCREMENT KEY,
+    -> empName VARCHAR(50) NOT NULL,
+    -> depId TINYINT UNSIGNED,
+    -> FOREIGN KEY(depId) REFERENCES department(id)
+    -> )ENGINE=INNODB;
+Query OK, 0 rows affected (0.13 sec)
+
+mysql> INSERT employee(empName,depId) VALUES ('wsy',1),('sgw',2)，('xiaoming',3),('zxs',3)，('dlz',4);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '，('xiaoming',3),('zxs',3)，('dlz',4)' at line 1
+mysql> INSERT employee(empName,depId) VALUES ('wsy',1),('sgw',2),('xiaoming',3),('zxs',3),('dlz',4);
+Query OK, 5 rows affected (0.12 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> select *FROM emplyee;
+ERROR 1146 (42S02): Table 'cms.emplyee' doesn't exist
+mysql> select *FROM employee;
++----+----------+-------+
+| id | empName  | depId |
++----+----------+-------+
+|  1 | wsy      |     1 |
+|  2 | sgw      |     2 |
+|  3 | xiaoming |     3 |
+|  4 | zxs      |     3 |
+|  5 | dlz      |     4 |
++----+----------+-------+
+5 rows in set (0.00 sec)
+
+mysql> DELETE FROM department WHERE id=3;
+ERROR 1451 (23000): Cannot delete or update a parent row: a foreign key constraint fails (`cms`.`employee`, CONSTRAINT `employee_ibfk_1` FOREIGN KEY (`depId`) REFERENCES `department` (`id`))
+mysql> DELETE FROM employee WHERE depId=3;
+Query OK, 2 rows affected (0.04 sec)
+
+mysql> DELETE FROM department WHERE id=3;
+Query OK, 1 row affected (0.07 sec)
+
+mysql> SELECT * FROM employee;
++----+---------+-------+
+| id | empName | depId |
++----+---------+-------+
+|  1 | wsy     |     1 |
+|  2 | sgw     |     2 |
+|  5 | dlz     |     4 |
++----+---------+-------+
+3 rows in set (0.00 sec)
+
+mysql> SELECT * FROM department;
++----+-----------+
+| id | depName   |
++----+-----------+
+|  1 | 研发部    |
+|  2 | 测试部    |
+|  4 | 销售部    |
++----+-----------+
+3 rows in set (0.00 sec)
+
+mysql> ALTER TABLE employee DROP FOREIGN KEY `employee_ibfk_1`;
+Query OK, 0 rows affected (0.11 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> SHOW CREATE TABLE emplyee;
+ERROR 1146 (42S02): Table 'cms.emplyee' doesn't exist
+mysql> SHOW CREATE TABLE employee;
++----------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table    | Create Table                                                                                                                                                                                                                                                     |
++----------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| employee | CREATE TABLE `employee` (
+  `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
+  `empName` varchar(50) NOT NULL,
+  `depId` tinyint(3) unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `depId` (`depId`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 |
++----------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+1 row in set (0.00 sec)
+
+mysql> ALTER TABLE employee ADD CONSTRAINT emp_fk_dep FOREIGN KEY(depId) REFERENCES department(id);
+Query OK, 3 rows affected (0.15 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> SHOW CREATE TABLE employee;
++----------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table    | Create Table                                                                                                                                                                                                                                                                                                                                          |
++----------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| employee | CREATE TABLE `employee` (
+  `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
+  `empName` varchar(50) NOT NULL,
+  `depId` tinyint(3) unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `emp_fk_dep` (`depId`),
+  CONSTRAINT `emp_fk_dep` FOREIGN KEY (`depId`) REFERENCES `department` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 |
++----------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+1 row in set (0.00 sec)
+
+mysql> ALTER TABLE employee DROP FOREIGN KEY emp_fk_dep;
+Query OK, 0 rows affected (0.09 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> ALTER TABLE employee DROP FOREIGN KEY emp_fk_dep;
+ERROR 1091 (42000): Can't DROP 'emp_fk_dep'; check that column/key exists
+mysql> ALTER TABLE employee ADD 
+    -> CONSTRAINT emp_fk_dep FOREIGN KEY(depId) REFERENCES department(id) 
+    -> ON DELETE CASCADE 和 ON UPDATE CASCADE;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '和 ON UPDATE CASCADE' at line 3
+mysql> ALTER TABLE employee ADD 
+    -> CONSTRAINT emp_fk_dep FOREIGN KEY(depId) REFERENCES department(id) 
+    -> ON DELETE CASCADE ON UPDATE CASCADE;
+Query OK, 3 rows affected (0.15 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> SHOW CREATE TABLE employee;
++----------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table    | Create Table                                                                                                                                                                                                                                                                                                                                                                              |
++----------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| employee | CREATE TABLE `employee` (
+  `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
+  `empName` varchar(50) NOT NULL,
+  `depId` tinyint(3) unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `emp_fk_dep` (`depId`),
+  CONSTRAINT `emp_fk_dep` FOREIGN KEY (`depId`) REFERENCES `department` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 |
++----------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+1 row in set (0.00 sec)
+
+mysql> SELECT * FROM employee;
++----+---------+-------+
+| id | empName | depId |
++----+---------+-------+
+|  1 | wsy     |     1 |
+|  2 | sgw     |     2 |
+|  5 | dlz     |     4 |
++----+---------+-------+
+3 rows in set (0.00 sec)
+
+mysql> SELECT * FROM department;
++----+-----------+
+| id | depName   |
++----+-----------+
+|  1 | 研发部    |
+|  2 | 测试部    |
+|  4 | 销售部    |
++----+-----------+
+3 rows in set (0.00 sec)
+
+mysql> DELETE FROM department WHERE id = 4;
+Query OK, 1 row affected (0.01 sec)
+
+mysql> SELECT * FROM employee;
++----+---------+-------+
+| id | empName | depId |
++----+---------+-------+
+|  1 | wsy     |     1 |
+|  2 | sgw     |     2 |
++----+---------+-------+
+2 rows in set (0.00 sec)
+
+mysql> UPDATE department SET id = id + 10;
+Query OK, 2 rows affected (0.18 sec)
+Rows matched: 2  Changed: 2  Warnings: 0
+
+mysql> SELECT * FROM employee;
++----+---------+-------+
+| id | empName | depId |
++----+---------+-------+
+|  1 | wsy     |    11 |
+|  2 | sgw     |    12 |
++----+---------+-------+
+2 rows in set (0.00 sec)
+
+mysql> ALTER TABLE employee DROP FOREIGN KEY emp_fk_dep;
+Query OK, 0 rows affected (0.05 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> ALTER TABLE employee ADD 
+    -> CONSTRAINT emp_fk_dep FOREIGN KEY(depId) REFERENCES department(id) 
+    -> ON DELETE SET NULL ON UPDATE SET NULL;
+Query OK, 2 rows affected (0.18 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+
+mysql> UPDATE department SET id = id - 10;
+Query OK, 2 rows affected (0.05 sec)
+Rows matched: 2  Changed: 2  Warnings: 0
+
+mysql> SELECT * FROM employee;
++----+---------+-------+
+| id | empName | depId |
++----+---------+-------+
+|  1 | wsy     |  NULL |
+|  2 | sgw     |  NULL |
++----+---------+-------+
+2 rows in set (0.00 sec)
+
+mysql> SELECT * FROM employee\G;
+*************************** 1. row ***************************
+     id: 1
+empName: wsy
+  depId: NULL
+*************************** 2. row ***************************
+     id: 2
+empName: sgw
+  depId: NULL
+2 rows in set (0.00 sec)
+
+ERROR: 
+No query specified
+
+mysql> SELECT empName FROM employee UNION SELECT username FROM cms_user;
++--------------+
+| empName      |
++--------------+
+| wsy          |
+| sgw          |
+| 张三         |
+| 张三三       |
+| 李四         |
+| 李四思思     |
+| 沈七         |
+| 沈琪琪       |
+| 王五         |
+| 王呜呜       |
+| 赵六         |
+| 赵溜溜       |
++--------------+
+12 rows in set (0.10 sec)
+
+mysql> SELECT empName FROM employee UNION ALL SELECT username FROM cms_user;
++--------------+
+| empName      |
++--------------+
+| wsy          |
+| sgw          |
+| 张三         |
+| 张三三       |
+| 李四         |
+| 李四思思     |
+| 沈七         |
+| 沈琪琪       |
+| 王五         |
+| 王呜呜       |
+| 赵六         |
+| 赵溜溜       |
++--------------+
+12 rows in set (0.00 sec)
+
+mysql> SELECT empName FROM employee UNION SELECT username FROM cms_user UNION SELECT depName FROM department;
++--------------+
+| empName      |
++--------------+
+| wsy          |
+| sgw          |
+| 张三         |
+| 张三三       |
+| 李四         |
+| 李四思思     |
+| 沈七         |
+| 沈琪琪       |
+| 王五         |
+| 王呜呜       |
+| 赵六         |
+| 赵溜溜       |
+| 研发部       |
+| 测试部       |
++--------------+
+14 rows in set (0.00 sec)
+
+mysql> CREATE TABLE IF NOT EXISTS student(
+    -> id TINYINT UNIQUE AUTO_INCREMENT KEY,
+    -> stuName VARCHAR(50) NOT NULL,
+    -> stuScore TINYINT
+    -> );
+Query OK, 0 rows affected (0.17 sec)
+
+mysql> INSERT student(stuName,stuScore) VALUES('stu1',30),('stu2',40),('stu3',50),('stu4',60),('stu5',70),('stu6',80),('stu7',90),('stu8',100);
+Query OK, 8 rows affected (0.01 sec)
+Records: 8  Duplicates: 0  Warnings: 0
+
+mysql> CREATE TABLE IF NOT EXISTS scholarship(
+    -> id TINYINT UNIQUE AUTO_INCREMENT KEY,
+    -> level TINYINT
+    -> );
+Query OK, 0 rows affected (0.16 sec)
+
+mysql> INSERT scholarship(level) VALUES(70),(80),(90);
+Query OK, 3 rows affected (0.01 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> SELECT stuName,stuScore FROM student WHERE stuScore >= (SELECT level FROM scholarship WHERE id =1);
++---------+----------+
+| stuName | stuScore |
++---------+----------+
+| stu5    |       70 |
+| stu6    |       80 |
+| stu7    |       90 |
+| stu8    |      100 |
++---------+----------+
+4 rows in set (0.07 sec)
+
+mysql> SELECT stuName,stuScore FROM student WHERE EXISTS (SELECT level FROM scholarship WHERE id =1);
++---------+----------+
+| stuName | stuScore |
++---------+----------+
+| stu1    |       30 |
+| stu2    |       40 |
+| stu3    |       50 |
+| stu4    |       60 |
+| stu5    |       70 |
+| stu6    |       80 |
+| stu7    |       90 |
+| stu8    |      100 |
++---------+----------+
+8 rows in set (0.00 sec)
+
+mysql> SELECT stuName,stuScore FROM student WHERE stuScore IN (SELECT level FROM scholarship);
++---------+----------+
+| stuName | stuScore |
++---------+----------+
+| stu5    |       70 |
+| stu6    |       80 |
+| stu7    |       90 |
++---------+----------+
+3 rows in set (0.05 sec)
+
+mysql> SELECT stuName,stuScore FROM student WHERE stuScore >=ANY (SELECT level FROM scholarship WHERE id =1);
++---------+----------+
+| stuName | stuScore |
++---------+----------+
+| stu5    |       70 |
+| stu6    |       80 |
+| stu7    |       90 |
+| stu8    |      100 |
++---------+----------+
+4 rows in set (0.07 sec)
+
+mysql> SELECT stuName,stuScore FROM student WHERE stuScore >=ANY (SELECT level FROM scholarship);
++---------+----------+
+| stuName | stuScore |
++---------+----------+
+| stu5    |       70 |
+| stu6    |       80 |
+| stu7    |       90 |
+| stu8    |      100 |
++---------+----------+
+4 rows in set (0.00 sec)
+
+mysql> SELECT stuName,stuScore FROM student WHERE stuScore > ALL (SELECT level FROM scholarship);
++---------+----------+
+| stuName | stuScore |
++---------+----------+
+| stu8    |      100 |
++---------+----------+
+1 row in set (0.00 sec)
+
+mysql> SELECT stuName,stuScore FROM student WHERE stuScore != ALL (SELECT level FROM scholarship);
++---------+----------+
+| stuName | stuScore |
++---------+----------+
+| stu1    |       30 |
+| stu2    |       40 |
+| stu3    |       50 |
+| stu4    |       60 |
+| stu8    |      100 |
++---------+----------+
+5 rows in set (0.05 sec)
+
+mysql> CREATE TABLE IF NOT EXISTS test1(
+    -> id TINYINT UNSIGNED AUTO_INCREMENT KEY,
+    -> score TINYINT
+    -> )SELECT stuScore FROM student;
+Query OK, 8 rows affected (0.14 sec)
+Records: 8  Duplicates: 0  Warnings: 0
+
+mysql> select * from test1;
++----+-------+----------+
+| id | score | stuScore |
++----+-------+----------+
+|  1 |  NULL |       30 |
+|  2 |  NULL |       40 |
+|  3 |  NULL |       50 |
+|  4 |  NULL |       60 |
+|  5 |  NULL |       70 |
+|  6 |  NULL |       80 |
+|  7 |  NULL |       90 |
+|  8 |  NULL |      100 |
++----+-------+----------+
+8 rows in set (0.00 sec)
+
+mysql> INSERT test1(score) SELECT stuScore FROM student;
+Query OK, 8 rows affected (0.05 sec)
+Records: 8  Duplicates: 0  Warnings: 0
+
+mysql> select * from test1;
++----+-------+----------+
+| id | score | stuScore |
++----+-------+----------+
+|  1 |  NULL |       30 |
+|  2 |  NULL |       40 |
+|  3 |  NULL |       50 |
+|  4 |  NULL |       60 |
+|  5 |  NULL |       70 |
+|  6 |  NULL |       80 |
+|  7 |  NULL |       90 |
+|  8 |  NULL |      100 |
+| 16 |    30 |     NULL |
+| 17 |    40 |     NULL |
+| 18 |    50 |     NULL |
+| 19 |    60 |     NULL |
+| 20 |    70 |     NULL |
+| 21 |    80 |     NULL |
+| 22 |    90 |     NULL |
+| 23 |   100 |     NULL |
++----+-------+----------+
+16 rows in set (0.00 sec)
+
+mysql> select * from student;
++----+---------+----------+
+| id | stuName | stuScore |
++----+---------+----------+
+|  1 | stu1    |       30 |
+|  2 | stu2    |       40 |
+|  3 | stu3    |       50 |
+|  4 | stu4    |       60 |
+|  5 | stu5    |       70 |
+|  6 | stu6    |       80 |
+|  7 | stu7    |       90 |
+|  8 | stu8    |      100 |
++----+---------+----------+
+8 rows in set (0.00 sec)
+
+mysql> SELECT stuScore FROM student;
++----------+
+| stuScore |
++----------+
+|       30 |
+|       40 |
+|       50 |
+|       60 |
+|       70 |
+|       80 |
+|       90 |
+|      100 |
++----------+
+8 rows in set (0.00 sec)
+
+mysql> SELECT id,stuScore FROM student;
++----+----------+
+| id | stuScore |
++----+----------+
+|  1 |       30 |
+|  2 |       40 |
+|  3 |       50 |
+|  4 |       60 |
+|  5 |       70 |
+|  6 |       80 |
+|  7 |       90 |
+|  8 |      100 |
++----+----------+
+8 rows in set (0.00 sec)
+
+mysql> CREATE TABLE IF NOT EXISTS test2(
+    -> id TINYINT UNSIGNED AUTO_INCREMENT KEY,
+    -> stuScore TINYINT
+    -> )SELECT stuScore FROM student;
+Query OK, 8 rows affected (0.09 sec)
+Records: 8  Duplicates: 0  Warnings: 0
+
+mysql> INSERT test2(stuScore) SELECT stuScore FROM student;
+Query OK, 8 rows affected (0.01 sec)
+Records: 8  Duplicates: 0  Warnings: 0
+
+mysql> select * from test2;
++----+----------+
+| id | stuScore |
++----+----------+
+|  1 |       30 |
+|  2 |       40 |
+|  3 |       50 |
+|  4 |       60 |
+|  5 |       70 |
+|  6 |       80 |
+|  7 |       90 |
+|  8 |      100 |
+| 16 |       30 |
+| 17 |       40 |
+| 18 |       50 |
+| 19 |       60 |
+| 20 |       70 |
+| 21 |       80 |
+| 22 |       90 |
+| 23 |      100 |
++----+----------+
+16 rows in set (0.00 sec)
+
+mysql> show tables;
++---------------+
+| Tables_in_cms |
++---------------+
+| cms_admin     |
+| cms_cate      |
+| cms_news      |
+| cms_user      |
+| department    |
+| employee      |
+| provinces     |
+| scholarship   |
+| student       |
+| test1         |
+| test2         |
++---------------+
+11 rows in set (0.25 sec)
+
+mysql> drop table test1;
+Query OK, 0 rows affected (0.11 sec)
+
+mysql> show tables;
++---------------+
+| Tables_in_cms |
++---------------+
+| cms_admin     |
+| cms_cate      |
+| cms_news      |
+| cms_user      |
+| department    |
+| employee      |
+| provinces     |
+| scholarship   |
+| student       |
+| test2         |
++---------------+
+10 rows in set (0.00 sec)
+
+mysql> drop table test2;
+Query OK, 0 rows affected (0.12 sec)
+
+mysql> show tables;
++---------------+
+| Tables_in_cms |
++---------------+
+| cms_admin     |
+| cms_cate      |
+| cms_news      |
+| cms_user      |
+| department    |
+| employee      |
+| provinces     |
+| scholarship   |
+| student       |
++---------------+
+9 rows in set (0.00 sec)
+
+mysql> select * from cms_user;
++----+--------------+-------------+-----------+------+-------------+------------+----------+-------+
+| id | username     | password    | sex       | age  | email       | regTime    | face     | proId |
++----+--------------+-------------+-----------+------+-------------+------------+----------+-------+
+|  1 | 张三         | zhangsan    | 男        |   10 | 123@qq.com  | 1419811708 | user.jpg |     1 |
+|  2 | 李四         | lisi        | 男        |   15 | 123@qq.com  | 1419811708 | user.jpg |     2 |
+|  3 | 王五         | wangwu      | 未填写    |   20 | 123@qq.com  | 1419811708 | user.jpg |     3 |
+|  4 | 赵六         | zhaoliu     | 未填写    |   25 | 123@qq.com  | 1419811708 | user.jpg |     4 |
+|  5 | 沈七         | shenqi      | 未填写    |   30 | 123@qq.com  | 1419811708 | user.jpg |     5 |
+|  6 | 张三三       | zhangsansan | 未填写    |   10 | user@qq.com | 1419811708 | user.jpg |     1 |
+|  7 | 李四思思     | lisisi      | 未填写    |   15 | user@qq.com | 1419811708 | user.jpg |     2 |
+|  8 | 王呜呜       | wangwuwu    | 未填写    |   20 | user@qq.com | 1419811708 | user.jpg |     3 |
+|  9 | 赵溜溜       | zhaoliuliu  | 未填写    |   25 | user@qq.com | 1419811708 | user.jpg |     4 |
+| 10 | 沈琪琪       | shenqiqi    | 未填写    |   30 | user@qq.com | 1419811708 | user.jpg |     5 |
++----+--------------+-------------+-----------+------+-------------+------------+----------+-------+
+10 rows in set (0.00 sec)
+
+mysql> SELECT * FROM cms_user WHERE username REGEXP '^张';
++----+-----------+-------------+-----------+------+-------------+------------+----------+-------+
+| id | username  | password    | sex       | age  | email       | regTime    | face     | proId |
++----+-----------+-------------+-----------+------+-------------+------------+----------+-------+
+|  1 | 张三      | zhangsan    | 男        |   10 | 123@qq.com  | 1419811708 | user.jpg |     1 |
+|  6 | 张三三    | zhangsansan | 未填写    |   10 | user@qq.com | 1419811708 | user.jpg |     1 |
++----+-----------+-------------+-----------+------+-------------+------------+----------+-------+
+2 rows in set (0.09 sec)
+
+mysql> SELECT * FROM cms_user WHERE username REGEXP '思$';
++----+--------------+----------+-----------+------+-------------+------------+----------+-------+
+| id | username     | password | sex       | age  | email       | regTime    | face     | proId |
++----+--------------+----------+-----------+------+-------------+------------+----------+-------+
+|  7 | 李四思思     | lisisi   | 未填写    |   15 | user@qq.com | 1419811708 | user.jpg |     2 |
++----+--------------+----------+-----------+------+-------------+------------+----------+-------+
+1 row in set (0.00 sec)
+
+mysql> SELECT * FROM cms_user WHERE username REGEXP '[李张沈]';
++----+--------------+-------------+-----------+------+-------------+------------+----------+-------+
+| id | username     | password    | sex       | age  | email       | regTime    | face     | proId |
++----+--------------+-------------+-----------+------+-------------+------------+----------+-------+
+|  1 | 张三         | zhangsan    | 男        |   10 | 123@qq.com  | 1419811708 | user.jpg |     1 |
+|  2 | 李四         | lisi        | 男        |   15 | 123@qq.com  | 1419811708 | user.jpg |     2 |
+|  5 | 沈七         | shenqi      | 未填写    |   30 | 123@qq.com  | 1419811708 | user.jpg |     5 |
+|  6 | 张三三       | zhangsansan | 未填写    |   10 | user@qq.com | 1419811708 | user.jpg |     1 |
+|  7 | 李四思思     | lisisi      | 未填写    |   15 | user@qq.com | 1419811708 | user.jpg |     2 |
+| 10 | 沈琪琪       | shenqiqi    | 未填写    |   30 | user@qq.com | 1419811708 | user.jpg |     5 |
++----+--------------+-------------+-----------+------+-------------+------------+----------+-------+
+6 rows in set (0.00 sec)
+
+mysql> SELECT * FROM cms_user WHERE username REGEXP '[^李张沈]';
++----+--------------+-------------+-----------+------+-------------+------------+----------+-------+
+| id | username     | password    | sex       | age  | email       | regTime    | face     | proId |
++----+--------------+-------------+-----------+------+-------------+------------+----------+-------+
+|  1 | 张三         | zhangsan    | 男        |   10 | 123@qq.com  | 1419811708 | user.jpg |     1 |
+|  2 | 李四         | lisi        | 男        |   15 | 123@qq.com  | 1419811708 | user.jpg |     2 |
+|  3 | 王五         | wangwu      | 未填写    |   20 | 123@qq.com  | 1419811708 | user.jpg |     3 |
+|  4 | 赵六         | zhaoliu     | 未填写    |   25 | 123@qq.com  | 1419811708 | user.jpg |     4 |
+|  5 | 沈七         | shenqi      | 未填写    |   30 | 123@qq.com  | 1419811708 | user.jpg |     5 |
+|  6 | 张三三       | zhangsansan | 未填写    |   10 | user@qq.com | 1419811708 | user.jpg |     1 |
+|  7 | 李四思思     | lisisi      | 未填写    |   15 | user@qq.com | 1419811708 | user.jpg |     2 |
+|  8 | 王呜呜       | wangwuwu    | 未填写    |   20 | user@qq.com | 1419811708 | user.jpg |     3 |
+|  9 | 赵溜溜       | zhaoliuliu  | 未填写    |   25 | user@qq.com | 1419811708 | user.jpg |     4 |
+| 10 | 沈琪琪       | shenqiqi    | 未填写    |   30 | user@qq.com | 1419811708 | user.jpg |     5 |
++----+--------------+-------------+-----------+------+-------------+------------+----------+-------+
+10 rows in set (0.00 sec)
+
+mysql> SELECT * FROM cms_user WHERE username REGEXP '[张三|琪琪]';
++----+-----------+-------------+-----------+------+-------------+------------+----------+-------+
+| id | username  | password    | sex       | age  | email       | regTime    | face     | proId |
++----+-----------+-------------+-----------+------+-------------+------------+----------+-------+
+|  1 | 张三      | zhangsan    | 男        |   10 | 123@qq.com  | 1419811708 | user.jpg |     1 |
+|  6 | 张三三    | zhangsansan | 未填写    |   10 | user@qq.com | 1419811708 | user.jpg |     1 |
+| 10 | 沈琪琪    | shenqiqi    | 未填写    |   30 | user@qq.com | 1419811708 | user.jpg |     5 |
++----+-----------+-------------+-----------+------+-------------+------------+----------+-------+
+3 rows in set (0.00 sec)
+
+mysql> SELECT * FROM cms_user WHERE username REGEXP '琪+';
++----+-----------+----------+-----------+------+-------------+------------+----------+-------+
+| id | username  | password | sex       | age  | email       | regTime    | face     | proId |
++----+-----------+----------+-----------+------+-------------+------------+----------+-------+
+| 10 | 沈琪琪    | shenqiqi | 未填写    |   30 | user@qq.com | 1419811708 | user.jpg |     5 |
++----+-----------+----------+-----------+------+-------------+------------+----------+-------+
+1 row in set (0.00 sec)
+
+mysql> SELECT * FROM cms_user WHERE username REGEXP '琪*';
++----+--------------+-------------+-----------+------+-------------+------------+----------+-------+
+| id | username     | password    | sex       | age  | email       | regTime    | face     | proId |
++----+--------------+-------------+-----------+------+-------------+------------+----------+-------+
+|  1 | 张三         | zhangsan    | 男        |   10 | 123@qq.com  | 1419811708 | user.jpg |     1 |
+|  2 | 李四         | lisi        | 男        |   15 | 123@qq.com  | 1419811708 | user.jpg |     2 |
+|  3 | 王五         | wangwu      | 未填写    |   20 | 123@qq.com  | 1419811708 | user.jpg |     3 |
+|  4 | 赵六         | zhaoliu     | 未填写    |   25 | 123@qq.com  | 1419811708 | user.jpg |     4 |
+|  5 | 沈七         | shenqi      | 未填写    |   30 | 123@qq.com  | 1419811708 | user.jpg |     5 |
+|  6 | 张三三       | zhangsansan | 未填写    |   10 | user@qq.com | 1419811708 | user.jpg |     1 |
+|  7 | 李四思思     | lisisi      | 未填写    |   15 | user@qq.com | 1419811708 | user.jpg |     2 |
+|  8 | 王呜呜       | wangwuwu    | 未填写    |   20 | user@qq.com | 1419811708 | user.jpg |     3 |
+|  9 | 赵溜溜       | zhaoliuliu  | 未填写    |   25 | user@qq.com | 1419811708 | user.jpg |     4 |
+| 10 | 沈琪琪       | shenqiqi    | 未填写    |   30 | user@qq.com | 1419811708 | user.jpg |     5 |
++----+--------------+-------------+-----------+------+-------------+------------+----------+-------+
+10 rows in set (0.00 sec)
+
+mysql> SELECT * FROM cms_user WHERE username REGEXP '张三{1}';
++----+-----------+-------------+-----------+------+-------------+------------+----------+-------+
+| id | username  | password    | sex       | age  | email       | regTime    | face     | proId |
++----+-----------+-------------+-----------+------+-------------+------------+----------+-------+
+|  1 | 张三      | zhangsan    | 男        |   10 | 123@qq.com  | 1419811708 | user.jpg |     1 |
+|  6 | 张三三    | zhangsansan | 未填写    |   10 | user@qq.com | 1419811708 | user.jpg |     1 |
++----+-----------+-------------+-----------+------+-------------+------------+----------+-------+
+2 rows in set (0.00 sec)
+
+mysql> SELECT * FROM cms_user WHERE username REGEXP '张三{2}';
++----+-----------+-------------+-----------+------+-------------+------------+----------+-------+
+| id | username  | password    | sex       | age  | email       | regTime    | face     | proId |
++----+-----------+-------------+-----------+------+-------------+------------+----------+-------+
+|  6 | 张三三    | zhangsansan | 未填写    |   10 | user@qq.com | 1419811708 | user.jpg |     1 |
++----+-----------+-------------+-----------+------+-------------+------------+----------+-------+
+1 row in set (0.00 sec)
+
+mysql> SELECT 3*5;
++-----+
+| 3*5 |
++-----+
+|  15 |
++-----+
+1 row in set (0.00 sec)
+
+mysql> SELECT 3/0;
++------+
+| 3/0  |
++------+
+| NULL |
++------+
+1 row in set, 1 warning (0.05 sec)
+
+mysql> SELECT NULL+5;
++--------+
+| NULL+5 |
++--------+
+|   NULL |
++--------+
+1 row in set (0.00 sec)
+
+mysql> SELECT username,age,age BETWEEN 10 AND 20 FROM cms_user;
++--------------+------+-----------------------+
+| username     | age  | age BETWEEN 10 AND 20 |
++--------------+------+-----------------------+
+| 张三         |   10 |                     1 |
+| 李四         |   15 |                     1 |
+| 王五         |   20 |                     1 |
+| 赵六         |   25 |                     0 |
+| 沈七         |   30 |                     0 |
+| 张三三       |   10 |                     1 |
+| 李四思思     |   15 |                     1 |
+| 王呜呜       |   20 |                     1 |
+| 赵溜溜       |   25 |                     0 |
+| 沈琪琪       |   30 |                     0 |
++--------------+------+-----------------------+
+10 rows in set (0.01 sec)
+
+mysql> \t
